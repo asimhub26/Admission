@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Tournament Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- html2pdf for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-btn.active { border-bottom: 3px solid #3b82f6; color: #1d4ed8; font-weight: 700; background-color: #eff6ff; }
+        .print-area { background: white; padding: 20px; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-area { margin: 0; padding: 0; width: 100%; box-shadow: none; }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md fixed w-full z-10 top-0">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    <span class="font-bold text-xl text-gray-800">Sports Dashboard</span>
+                </div>
+                <div class="hidden md:flex space-x-2">
+                    <button class="tab-btn active px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-t-lg transition" onclick="openTab('dashboard', this)">Dashboard</button>
+                    <button class="tab-btn px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-t-lg transition" onclick="openTab('results', this)">Results</button>
+                    <button class="tab-btn px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-t-lg transition" onclick="openTab('judge-sheets', this)">Judge Sheets</button>
+                    <button class="tab-btn px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-t-lg transition" onclick="openTab('chest-glance', this)">Chest No. At a Glance</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto mt-24 px-4 pb-12">
+        
+        <!-- Live Indicator -->
+        <div class="flex justify-end mb-4">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                Live Connected to Google Sheets
+            </span>
+        </div>
+
+        <!-- TAB 1: Dashboard (Circle Root List) -->
+        <div id="dashboard" class="tab-content active">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Circle Root List / Overview</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse" id="root-list-table">
+                        <thead class="bg-blue-50 text-blue-900">
+                            <tr>
+                                <th class="p-3 border">Loading Data...</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Results -->
+        <div id="results" class="tab-content">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Event Results</h2>
+                    <div class="flex space-x-3 mt-4 md:mt-0 no-print">
+                        <button onclick="exportExcel('result-print-area', 'Sports_Results')" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            Export Excel
+                        </button>
+                        <button onclick="exportPDF('result-print-area', 'Sports_Results')" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            Download PDF (A4)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200 no-print flex items-center space-x-4">
+                    <label class="font-bold text-gray-700">Search Result by Chest No:</label>
+                    <input type="text" id="chest-search" placeholder="Enter Chest No..." class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-64" onkeyup="searchChestNo()">
+                </div>
+
+                <div id="result-print-area" class="print-area">
+                    <div class="text-center mb-4 hidden print-header">
+                        <h1 class="text-2xl font-bold">Sports Tournament Results</h1>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse border border-gray-300" id="result-table">
+                            <thead class="bg-gray-100 text-gray-800">
+                                <tr>
+                                    <th class="p-3 border border-gray-300">Chest No</th>
+                                    <th class="p-3 border border-gray-300">Participant Name</th>
+                                    <th class="p-3 border border-gray-300">Event</th>
+                                    <th class="p-3 border border-gray-300">Position/Result</th>
+                                </tr>
+                            </thead>
+                            <tbody id="result-tbody">
+                                <!-- Data will be injected here -->
+                                <tr><td colspan="4" class="p-4 text-center text-gray-500">Fetching live results...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Judge Sheets -->
+        <div id="judge-sheets" class="tab-content">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Judge Sheets (By Group & Event)</h2>
+                    <button onclick="exportPDF('judge-print-area', 'Judge_Sheet')" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center no-print">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Download PDF (A4)
+                    </button>
+                </div>
+                
+                <div class="mb-4 no-print flex space-x-4">
+                    <select id="judge-group-select" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Group</option>
+                        <option value="Group A">Group A</option>
+                        <option value="Group B">Group B</option>
+                        <option value="Group C">Group C</option>
+                    </select>
+                    <select id="judge-event-select" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Event</option>
+                        <option value="100m Race">100m Race</option>
+                        <option value="Long Jump">Long Jump</option>
+                        <option value="High Jump">High Jump</option>
+                    </select>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" onclick="generateJudgeSheet()">View Sheet</button>
+                </div>
+
+                <div id="judge-print-area" class="print-area bg-white p-8 border shadow-sm mx-auto" style="min-height: 800px;">
+                    <div class="text-center mb-6">
+                        <h1 class="text-3xl font-bold uppercase underline">JUDGE SHEET</h1>
+                        <div class="flex justify-between mt-4 text-lg font-semibold border-b-2 border-black pb-2">
+                            <span id="display-group">Group: ______</span>
+                            <span id="display-event">Event: ______</span>
+                            <span id="display-gender">Gender: ______</span>
+                        </div>
+                    </div>
+                    <table class="w-full text-center border-collapse border-2 border-black">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-3 border border-black w-16">Sl No</th>
+                                <th class="p-3 border border-black w-32">Chest No</th>
+                                <th class="p-3 border border-black">Participant Name</th>
+                                <th class="p-3 border border-black w-32">Performance</th>
+                                <th class="p-3 border border-black w-24">Position</th>
+                            </tr>
+                        </thead>
+                        <tbody id="judge-tbody">
+                            <!-- Blank rows for judge sheet -->
+                        </tbody>
+                    </table>
+                    <div class="flex justify-between mt-16 font-bold">
+                        <span>Signature of Scorer</span>
+                        <span>Signature of Chief Judge</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Chest No. At a Glance -->
+        <div id="chest-glance" class="tab-content">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Chest No. At a Glance</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center border-collapse border border-gray-300" id="chest-glance-table">
+                        <thead class="bg-indigo-50 text-indigo-900">
+                            <tr>
+                                <th class="p-3 border border-gray-300">Group</th>
+                                <th class="p-3 border border-gray-300">Event</th>
+                                <th class="p-3 border border-gray-300">Gender</th>
+                                <th class="p-3 border border-gray-300">Chest Numbers Assigned</th>
+                            </tr>
+                        </thead>
+                        <tbody id="chest-glance-tbody">
+                            <tr><td colspan="4" class="p-4 text-center text-gray-500">Live data fetching...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Tab Navigation
+        function openTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+        }
+
+        // ========================================================
+        // ADMIN CONFIGURATION: GOOGLE SHEETS CSV LINKS
+        // Replace these links with the specific 'pub?gid=XXX&output=csv' for each sheet
+        // ========================================================
+        
+        // Default link provided by user (Assuming it contains main data)
+        const URL_ROOT_LIST = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTY-Kkl7vxqyGa68ifHnMDHEGIuGEgAmzTLbmE5_IJ1vk_xbW5VuJK5zCPxMG7FRA/pub?output=csv";
+        
+        // For demonstration, mapping the same URL. 
+        // In real use, append '&gid=YOUR_SHEET_ID' to the URL for each specific sheet!
+        const URL_RESULTS = URL_ROOT_LIST; 
+        const URL_CHEST_GLANCE = URL_ROOT_LIST;
+
+        let allResultData = [];
+
+        async function fetchAllData() {
+            try {
+                // Fetch Root List
+                const resRoot = await fetch(URL_ROOT_LIST);
+                const txtRoot = await resRoot.text();
+                populateTable('root-list-table', txtRoot);
+
+                // Fetch Results
+                const resResult = await fetch(URL_RESULTS);
+                const txtResult = await resResult.text();
+                allResultData = parseCSV(txtResult);
+                populateResults(allResultData);
+                
+                // Populate Chest Glance (mock processing)
+                populateChestGlance(allResultData);
+                
+                // Initialize default Judge Sheet blank rows
+                generateJudgeSheet();
+
+            } catch (err) {
+                console.error("Error fetching live data:", err);
+                document.getElementById('root-list-table').innerHTML = "<tr><td class='p-4 text-red-500'>Failed to load data. Check URL or internet connection.</td></tr>";
+            }
+        }
+
+        function parseCSV(csvText) {
+            return csvText.split("\n").map(row => row.split(","));
+        }
+
+        function populateTable(tableId, csvText) {
+            const rows = parseCSV(csvText);
+            const table = document.getElementById(tableId);
+            let html = "";
+            
+            rows.forEach((row, index) => {
+                if(row.length < 2) return;
+                html += "<tr class='" + (index === 0 ? "bg-gray-100 font-bold" : "border-b hover:bg-gray-50") + "'>";
+                row.forEach(cell => {
+                    let cellTag = index === 0 ? "th" : "td";
+                    html += `<${cellTag} class="p-3 border">${cell.trim()}</${cellTag}>`;
+                });
+                html += "</tr>";
+            });
+            table.innerHTML = html;
+        }
+
+        function populateResults(dataRows) {
+            const tbody = document.getElementById('result-tbody');
+            let html = "";
+            // Assuming Result CSV format: Chest No, Name, Event, Result
+            // If data is generic, we just show it.
+            for(let i=1; i<dataRows.length; i++) {
+                let row = dataRows[i];
+                if(row.length < 2) continue;
+                html += `<tr class="border-b hover:bg-gray-50 data-row">
+                    <td class="p-3 border border-gray-300 font-bold chest-cell">${row[0] || '-'}</td>
+                    <td class="p-3 border border-gray-300">${row[1] || '-'}</td>
+                    <td class="p-3 border border-gray-300">${row[2] || '-'}</td>
+                    <td class="p-3 border border-gray-300 text-green-700 font-semibold">${row[3] || 'Pending'}</td>
+                </tr>`;
+            }
+            if(html === "") html = "<tr><td colspan='4' class='p-4 text-center'>No results uploaded yet.</td></tr>";
+            tbody.innerHTML = html;
+        }
+
+        function searchChestNo() {
+            let input = document.getElementById('chest-search').value.toUpperCase();
+            let rows = document.querySelectorAll('#result-tbody .data-row');
+            
+            rows.forEach(row => {
+                let chestNo = row.querySelector('.chest-cell').innerText.toUpperCase();
+                if (chestNo.includes(input)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        function generateJudgeSheet() {
+            const group = document.getElementById('judge-group-select').value || 'Group A';
+            const event = document.getElementById('judge-event-select').value || '100m Race';
+            
+            document.getElementById('display-group').innerText = `Group: ${group}`;
+            document.getElementById('display-event').innerText = `Event: ${event}`;
+            
+            let tbody = document.getElementById('judge-tbody');
+            let html = "";
+            for(let i=1; i<=15; i++) {
+                html += `
+                <tr>
+                    <td class="p-3 border border-black">${i}</td>
+                    <td class="p-3 border border-black"></td>
+                    <td class="p-3 border border-black text-left"></td>
+                    <td class="p-3 border border-black"></td>
+                    <td class="p-3 border border-black"></td>
+                </tr>`;
+            }
+            tbody.innerHTML = html;
+        }
+
+        function populateChestGlance(dataRows) {
+            // Mock logic: Aggregating chest numbers by Group and Event
+            const tbody = document.getElementById('chest-glance-tbody');
+            tbody.innerHTML = `
+                <tr><td class="p-3 border">Group A</td><td class="p-3 border">100m Race</td><td class="p-3 border">Boys</td><td class="p-3 border font-mono">101, 102, 103, 104, 105</td></tr>
+                <tr><td class="p-3 border">Group A</td><td class="p-3 border">100m Race</td><td class="p-3 border">Girls</td><td class="p-3 border font-mono">201, 202, 203, 204, 205</td></tr>
+                <tr><td class="p-3 border">Group B</td><td class="p-3 border">Long Jump</td><td class="p-3 border">Boys</td><td class="p-3 border font-mono">301, 302, 303, 304, 305</td></tr>
+            `;
+        }
+
+        // --- Export Functions ---
+        function exportExcel(divId, filename) {
+            var elt = document.getElementById(divId);
+            var wb = XLSX.utils.table_to_book(elt, {sheet:"Sheet1"});
+            XLSX.writeFile(wb, filename + '.xlsx');
+        }
+
+        function exportPDF(divId, filename) {
+            var element = document.getElementById(divId);
+            
+            // Show header for print if hidden
+            let headers = element.querySelectorAll('.print-header');
+            headers.forEach(h => h.classList.remove('hidden'));
+
+            var opt = {
+                margin:       10,
+                filename:     filename + '.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Hide header again after printing
+                headers.forEach(h => h.classList.add('hidden'));
+            });
+        }
+
+        // Initialize fetching on load
+        window.onload = fetchAllData;
+    </script>
+</body>
+</html>
