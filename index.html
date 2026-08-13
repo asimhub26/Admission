@@ -620,8 +620,12 @@ function formatAddressForCert(addr) {
   if (!addr) return "";
   return addr
     .split(",")
-    .map((part) => part.trim().replace(/-(.+)/, " - $1"))
-    .join(" , ");
+    .map((part) => {
+      let p = part.trim().replace(/-(.+)/, " - $1");
+      p = p.replace(/^Pin\b/i, "PIN"); // PIN in capitals
+      return p;
+    })
+    .join(", ");
 }
 function esc(s) {
   return (s ?? "").toString().replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -879,11 +883,14 @@ function renderSchoolHeader() {
 
 function renderCertificatePreview(s) {
   const addr = formatAddressForCert(s.address);
-  const poss = s.gender === "F" ? "her" : "his"; // possessive pronoun based on the student's recorded gender
-  const body1 = `This is to certify that <b>${esc(s.name)}</b>, C/O - <b>${esc(s.father)}</b>, ${esc(addr)}, was admitted in this school on - <b>${esc(
+  const isFemale = s.gender === "F";
+  const relation = isFemale ? "D/O" : "S/O"; // Son of / Daughter of
+  const poss = isFemale ? "her" : "his"; // possessive pronoun
+  const obj = isFemale ? "her" : "him"; // object pronoun
+  const body1 = `This is to certify that <b>${esc(s.name)}</b>, ${relation} - <b>${esc(s.father)}</b>, ${esc(addr)}, was admitted to this school on <b>${esc(
     s.admissionDate
-  )}</b> in class - <b>${esc(s.class)}</b>. According to the school admission register ${poss} DOB is : <b>${esc(s.dob)}</b>.`;
-  const body2 = `I wish ${poss} success in every step of life.`;
+  )}</b> in Class <b>${esc(s.class)}</b>. According to the school admission register, ${poss} Date of Birth is <b>${esc(s.dob)}</b>.`;
+  const body2 = `I wish ${obj} success in every step of life.`;
   document.getElementById("pvBody").innerHTML = body1;
   document.getElementById("pvBody2").innerHTML = body2;
   updateRefDatePreview();
