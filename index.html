@@ -188,9 +188,10 @@ table.data-table{width:100%;border-collapse:collapse;font-family:var(--font-en);
 .cert-school-line.mono{font-family:var(--font-mono);font-size:11px;color:var(--muted);}
 .cert-rule{height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:14px 0 10px;}
 .cert-refdate{display:flex;justify-content:space-between;font-size:12.5px;position:relative;margin-bottom:26px;}
-.cert-title{text-align:center;font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:.08em;margin-bottom:28px;position:relative;}
+.cert-title{text-align:center;font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:.08em;margin-top:16mm;margin-bottom:28px;position:relative;}
 .cert-body{font-size:14px;line-height:2.1;text-align:justify;position:relative;color:var(--ink);}
-.cert-sign{position:absolute;bottom:26mm;right:20mm;text-align:center;}
+.cert-body + .cert-body{margin-top:1.4em;}
+.cert-sign{position:absolute;bottom:42mm;right:20mm;text-align:center;}
 .sign-line{width:180px;border-bottom:1.5px solid var(--ink);margin-bottom:6px;}
 .sign-label{font-size:12px;color:var(--muted);}
 .mono{font-family:var(--font-mono);}
@@ -448,6 +449,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
               <p class="cert-body" id="pvBody">
                 This is to certify that <b>—</b>, was admitted in this school.
               </p>
+              <p class="cert-body" id="pvBody2"></p>
 
               <div class="cert-sign">
                 <div class="sign-line"></div>
@@ -870,10 +872,13 @@ function renderSchoolHeader() {
 
 function renderCertificatePreview(s) {
   const addr = formatAddressForCert(s.address);
-  const body = `This is to certify that <b>${esc(s.name)}</b>, C/O - <b>${esc(s.father)}</b>, ${esc(addr)}, was admitted in this school on - <b>${esc(
+  const poss = s.gender === "F" ? "her" : "his"; // possessive pronoun based on the student's recorded gender
+  const body1 = `This is to certify that <b>${esc(s.name)}</b>, C/O - <b>${esc(s.father)}</b>, ${esc(addr)}, was admitted in this school on - <b>${esc(
     s.admissionDate
-  )}</b>. According to the school admission register his/her DOB is : <b>${esc(s.dob)}</b>. I wish his/her success in every step of life.`;
-  document.getElementById("pvBody").innerHTML = body;
+  )}</b>. According to the school admission register ${poss} DOB is : <b>${esc(s.dob)}</b>.`;
+  const body2 = `I wish ${poss} success in every step of life.`;
+  document.getElementById("pvBody").innerHTML = body1;
+  document.getElementById("pvBody2").innerHTML = body2;
   updateRefDatePreview();
 }
 function updateRefDatePreview() {
