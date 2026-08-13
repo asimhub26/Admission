@@ -419,558 +419,688 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
           <div class="cert-toolbar">
             <div class="cert-toolbar-fields">
               <label>Ref. No <input type="text" id="certRefNo" placeholder="e.g. BPS/07/2026" /></label>
-             .fine-print{font-size:11.5px;color:var(--muted);margin-top:14px;line-height:1.7;border-top:1px dashed var(--line);padding-top:12px;}
-
-.admin-login-box{display:flex;justify-content:center;padding-top:40px;}
-.admin-login-box .panel{width:100%;}
-.admin-login-box input{width:100%;padding:12px 14px;border-radius:9px;border:1.5px solid var(--line);margin:14px 0;font-size:14px;}
-.error-msg{color:#B3273F;font-size:12.5px;min-height:16px;}
-
-.admin-panel{display:grid;gap:18px;}
-.admin-table-wrap{max-height:50vh;}
-table.editable input{width:100%;border:1px solid transparent;background:transparent;padding:6px 4px;border-radius:6px;font-size:13px;font-family:var(--font-en);}
-table.editable input:focus{border-color:var(--gold);background:#FFFDF5;outline:none;}
-table.editable td{padding:4px 8px;}
-
-.toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:var(--navy);color:#fff;padding:12px 22px;border-radius:10px;font-size:13.5px;
-  box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s;z-index:100;
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-/* ---------------- RESPONSIVE ---------------- */
-@media (max-width:1100px){
-  .chart-grid{grid-template-columns:1fr;}
-  .stat-grid{grid-template-columns:repeat(2,1fr);}
-  .cert-layout{grid-template-columns:1fr;}
-  .cert-list-pane{position:static;}
-}
-@media (max-width:760px){
-  .app{flex-direction:column;}
-  .sidebar{width:100%;height:auto;position:relative;flex-direction:row;align-items:center;flex-wrap:wrap;padding:16px;}
-  .brand{border-bottom:none;margin-bottom:0;padding-bottom:0;}
-  .nav{flex-direction:row;flex-wrap:wrap;margin-left:auto;}
-  .sidebar-foot{display:none;}
-  .main{padding:20px 16px;}
-  h1{font-size:26px;}
-  .a4-sheet{width:100%;padding:14mm 10mm;min-height:auto;}
-}
-
-/* focus visibility */
-button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
-@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
-
-/* ---------------- PRINT ---------------- */
-@media print{
-  body *{visibility:hidden;}
-  .a4-sheet, .a4-sheet *{visibility:visible;}
-  .a4-sheet{position:absolute;top:0;left:0;width:210mm;min-height:297mm;box-shadow:none;border:none;margin:0;padding:22mm 20mm;}
-  .a4-scroll{overflow:visible;max-height:none;padding:0;background:none;}
-  @page{size:A4;margin:0;}
-}
-
-</style>
-</head>
-<body>
-
-<div class="app">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="brand">
-      <svg class="seal" viewBox="0 0 100 100" aria-hidden="true">
-        <circle cx="50" cy="50" r="46" fill="none" stroke="#C89B3C" stroke-width="2"/>
-        <circle cx="50" cy="50" r="38" fill="none" stroke="#C89B3C" stroke-width="1"/>
-        <circle cx="50" cy="50" r="30" fill="#7A2039"/>
-        <text x="50" y="56" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="22" fill="#E8C878" font-weight="700">BPS</text>
-        <g stroke="#C89B3C" stroke-width="1.4">
-          <path d="M50 4 L50 12" /><path d="M50 88 L50 96" />
-          <path d="M4 50 L12 50" /><path d="M88 50 L96 50" />
-        </g>
-      </svg>
-      <div class="brand-text">
-        <div class="brand-title" id="brandSchoolName">BHATPARA PRIMARY SCHOOL</div>
-        <div class="brand-sub">Admission Dashboard</div>
-      </div>
-    </div>
-
-    <nav class="nav">
-      <button class="nav-item active" data-view="overview">
-        <span class="nav-ico">◆</span> Overview
-      </button>
-      <button class="nav-item" data-view="students">
-        <span class="nav-ico">◆</span> Students Register
-      </button>
-      <button class="nav-item" data-view="certificate">
-        <span class="nav-ico">◆</span> Certificate
-      </button>
-      <button class="nav-item" data-view="admin">
-        <span class="nav-ico">◆</span> Admin Login
-      </button>
-    </nav>
-
-    <div class="sidebar-foot">
-      <div id="syncStatus" class="sync-status">Local data loaded</div>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <main class="main">
-
-    <!-- ===================== OVERVIEW ===================== -->
-    <section class="view active" id="view-overview">
-      <header class="view-head">
-        <div>
-          <div class="eyebrow">Summary</div>
-          <h1>Overview</h1>
-          <p class="lede">A summary of every student admitted from 2000 to the present.</p>
-        </div>
-        <div class="search-wrap">
-          <input type="text" id="overviewSearch" placeholder="Quick search by name..." />
-          <div id="overviewSearchResults" class="quick-results"></div>
-        </div>
-      </header>
-
-      <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-label">Total Students</div>
-          <div class="stat-value" id="statTotal">0</div>
-          <div class="stat-foot">Year 2000 – 2020</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Boys</div>
-          <div class="stat-value" id="statMale">0</div>
-          <div class="stat-foot" id="statMalePct">0%</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Girls</div>
-          <div class="stat-value" id="statFemale">0</div>
-          <div class="stat-foot" id="statFemalePct">0%</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Active Classes</div>
-          <div class="stat-value" id="statClasses">0</div>
-          <div class="stat-foot">PP – IV</div>
-        </div>
-      </div>
-
-      <div class="chart-grid">
-        <div class="panel">
-          <div class="panel-head">
-            <h3>Admissions by Year</h3>
+              <label>Date <input type="date" id="certDate" /></label>
+            </div>
+            <div class="cert-toolbar-actions">
+              <button class="btn ghost" id="btnPrint">🖶 Print</button>
+              <button class="btn primary" id="btnDownloadPdf">⬇ Download PDF</button>
+            </div>
           </div>
-          <canvas id="chartYears" height="130"></canvas>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Class Distribution</h3></div>
-          <canvas id="chartClasses" height="130"></canvas>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Boys / Girls Ratio</h3></div>
-          <canvas id="chartGender" height="130"></canvas>
+
+          <div class="a4-scroll">
+            <div class="a4-sheet" id="certificateSheet">
+              <div class="cert-watermark">
+                <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="#7A2039" stroke-width="1"/><circle cx="50" cy="50" r="38" fill="none" stroke="#7A2039" stroke-width="1"/></svg>
+              </div>
+              <div class="cert-header">
+                <div class="cert-school-name" id="pvSchoolName">BHATPARA PRIMARY SCHOOL</div>
+                <div class="cert-school-line" id="pvSchoolAddr">P.O - PILKHAN * HOOGHLY * PIN - 712613</div>
+                <div class="cert-school-line mono" id="pvSchoolEstd">Estd. - 1982 * UDISE - 19120212103</div>
+              </div>
+              <div class="cert-rule"></div>
+              <div class="cert-refdate">
+                <span>Ref. No. <span class="mono" id="pvRefNo">...................</span></span>
+                <span>Date - <span class="mono" id="pvDate">..................</span></span>
+              </div>
+
+              <div class="cert-title">TO WHOM IT MAY CONCERN</div>
+
+              <p class="cert-body" id="pvBody">
+                This is to certify that <b>—</b>, was admitted in this school.
+              </p>
+
+              <div class="cert-sign">
+                <div class="sign-line"></div>
+                <div class="sign-label" id="pvSignLabel">Signature of the HOI</div>
+              </div>
+            </div>
+          </div>
+          <div class="cert-empty" id="certEmptyState">
+            <p>Select a student from the list on the left.</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ===================== STUDENTS ===================== -->
-    <section class="view" id="view-students">
+    <!-- ===================== ADMIN ===================== -->
+    <section class="view" id="view-admin">
       <header class="view-head">
         <div>
-          <div class="eyebrow">Register</div>
-          <h1>Students</h1>
-          <p class="lede" id="studentsCount">— students</p>
+          <div class="eyebrow">Control Room</div>
+          <h1>Admin</h1>
+          <p class="lede">Update data and sync with Google Sheet.</p>
         </div>
       </header>
 
-      <div class="filter-bar">
-        <input type="text" id="studentSearch" class="search-input" placeholder="Search by name, father, mother or address..." />
-        <select id="filterYear"><option value="">All Years</option></select>
-        <select id="filterClass"><option value="">All Classes</option></select>
-        <select id="filterGender">
-          <option value="">All</option>
-          <option value="M">Boy</option>
-          <option value="F">Girl</option>
-        </select>
-        <button class="btn ghost" id="resetFilters">Reset</button>
-      </div>
-
-      <div class="table-wrap">
-        <table class="data-table" id="studentsTable">
-          <thead>
-            <tr>
-              <th data-sort="sl">Sl</th>
-              <th data-sort="name">Name</th>
-              <th data-sort="class">Class</th>
-              <th data-sort="year">Year</th>
-              <th data-sort="gender">M/F</th>
-              <th data-sort="father">Father</th>
-              <th data-sort="mother">Mother</th>
-              <th data-sort="dob">D.O.B</th>
-              <th data-sort="admissionDate">Admission</th>
-            </tr>
-          </thead>
-          <tbody id="studentsTbody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ===================== CERTIFICATE ===================== -->
-    <section class="view" id="view-certificate">
-      <header class="view-head">
-        <div>
-          <div class="eyebrow">Certificate Generator</div>
-          <h1>Certificate</h1>
-          <p class="lede">Click a student's name in the list — the certificate will be generated on the school's letterhead.</p>
+      <div id="adminLoginBox" class="admin-login-box">
+        <div class="panel narrow">
+          <h3>Admin Login</h3>
+          <p class="muted">Only authorized users can edit data.</p>
+          <input type="password" id="adminPassword" placeholder="Enter password" />
+          <button class="btn primary" id="btnAdminLogin">Login</button>
+          <div class="error-msg" id="adminLoginError"></div>
         </div>
-      </header>
+      </div>
 
-      <div class="cert-layout">
-        <div class="cert-list-pane">
-          <input type="text" id="certSearch" class="search-input" placeholder="Search by name / class / year..." />
-          <div class="cert-filter-row">
-            <select id="certFilterYear"><option value="">All Years</option></select>
-            <select id="certFilterClass"><option value="">All Classes</option></select>
+      <div id="adminPanel" class="admin-panel hidden">
+        <div class="panel">
+          <div class="panel-head-row">
+            <h3>Sync from Google Sheet</h3>
+            <button class="btn ghost small" id="btnLogout">Logout</button>
           </div>
-          <div class="cert-list" id="certList"></div>
+          <ol class="steps">
+            <li>Open your Google Sheet → <b>File → Share → Publish to web</b></li>
+            <li>Select the sheet, choose <b>CSV</b> as the format, then click Publish</li>
+            <li>Paste the link you get into the box below</li>
+          </ol>
+          <label class="field-label">CSV link for the Data sheet</label>
+          <input type="text" id="sheetUrlData" class="text-input" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" />
+          <label class="field-label">School Info (optional) — name, address, Estd/UDISE in one row</label>
+          <input type="text" id="sheetUrlSchool" class="text-input" placeholder="Optional — CSV link for school info" />
+          <button class="btn primary" id="btnSyncSheet">⟳ Sync Now</button>
+          <div class="hint" id="syncHint"></div>
+          <p class="fine-print">Note: this dashboard is fully static (no server), so synced data is saved for everyone who opens this dashboard link. The admin password only stops casual users from editing — if sensitive data (like Aadhaar numbers) is included, only share this link with people you trust.</p>
         </div>
 
-        <div class="cert-preview-pane">
-          <div class="cert-toolbar">
-            <div class="cert-toolbar-fields">
-              <label>Ref. No <input type="text" id="certRefNo" placeholder="e.g. BPS/07/2026" /></label>
-                                <button class="tab-btn active px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-t-lg transition" onclick="openTab('dashboard', this)">Dashboard</button>
-                    <button class="tab-btn px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-t-lg transition" onclick="openTab('results', this)">Results</button>
-                    <button class="tab-btn px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-t-lg transition" onclick="openTab('judge-sheets', this)">Judge Sheets</button>
-                    <button class="tab-btn px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-t-lg transition" onclick="openTab('chest-glance', this)">Chest No. At a Glance</button>
-                </div>
+        <div class="panel">
+          <h3>School Info (Certificate Letterhead)</h3>
+          <label class="field-label">School Name</label>
+          <input type="text" id="editSchoolName" class="text-input" />
+          <label class="field-label">Address Line</label>
+          <input type="text" id="editSchoolAddr" class="text-input" />
+          <label class="field-label">Estd / UDISE Line</label>
+          <input type="text" id="editSchoolEstd" class="text-input" />
+          <label class="field-label">Signature Label</label>
+          <input type="text" id="editSignLabel" class="text-input" />
+          <button class="btn primary" id="btnSaveSchoolInfo">Save</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head-row">
+            <h3>Edit Student Register</h3>
+            <div>
+              <button class="btn ghost small" id="btnAddRow">+ New Student</button>
+              <button class="btn ghost small" id="btnExportJson">⬇ Export JSON</button>
+              <button class="btn ghost small" id="btnExportCsv">⬇ Export CSV</button>
             </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto mt-24 px-4 pb-12">
-        
-        <!-- Live Indicator -->
-        <div class="flex justify-end mb-4">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-                Live Connected to Google Sheets
-            </span>
-        </div>
-
-        <!-- TAB 1: Dashboard (Circle Root List) -->
-        <div id="dashboard" class="tab-content active">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Circle Root List / Overview</h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse" id="root-list-table">
-                        <thead class="bg-blue-50 text-blue-900">
-                            <tr>
-                                <th class="p-3 border">Loading Data...</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 2: Results -->
-        <div id="results" class="tab-content">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-6 border-b pb-4">
-                    <h2 class="text-2xl font-bold text-gray-800">Event Results</h2>
-                    <div class="flex space-x-3 mt-4 md:mt-0 no-print">
-                        <button onclick="exportExcel('result-print-area', 'Sports_Results')" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            Export Excel
-                        </button>
-                        <button onclick="exportPDF('result-print-area', 'Sports_Results')" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                            Download PDF (A4)
-                        </button>
-                    </div>
-                </div>
-
-                <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200 no-print flex items-center space-x-4">
-                    <label class="font-bold text-gray-700">Search Result by Chest No:</label>
-                    <input type="text" id="chest-search" placeholder="Enter Chest No..." class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-64" onkeyup="searchChestNo()">
-                </div>
-
-                <div id="result-print-area" class="print-area">
-                    <div class="text-center mb-4 hidden print-header">
-                        <h1 class="text-2xl font-bold">Sports Tournament Results</h1>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse border border-gray-300" id="result-table">
-                            <thead class="bg-gray-100 text-gray-800">
-                                <tr>
-                                    <th class="p-3 border border-gray-300">Chest No</th>
-                                    <th class="p-3 border border-gray-300">Participant Name</th>
-                                    <th class="p-3 border border-gray-300">Event</th>
-                                    <th class="p-3 border border-gray-300">Position/Result</th>
-                                </tr>
-                            </thead>
-                            <tbody id="result-tbody">
-                                <!-- Data will be injected here -->
-                                <tr><td colspan="4" class="p-4 text-center text-gray-500">Fetching live results...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 3: Judge Sheets -->
-        <div id="judge-sheets" class="tab-content">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div class="flex justify-between items-center mb-6 border-b pb-4">
-                    <h2 class="text-2xl font-bold text-gray-800">Judge Sheets (By Group & Event)</h2>
-                    <button onclick="exportPDF('judge-print-area', 'Judge_Sheet')" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center no-print">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                        Download PDF (A4)
-                    </button>
-                </div>
-                
-                <div class="mb-4 no-print flex space-x-4">
-                    <select id="judge-group-select" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select Group</option>
-                        <option value="Group A">Group A</option>
-                        <option value="Group B">Group B</option>
-                        <option value="Group C">Group C</option>
-                    </select>
-                    <select id="judge-event-select" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select Event</option>
-                        <option value="100m Race">100m Race</option>
-                        <option value="Long Jump">Long Jump</option>
-                        <option value="High Jump">High Jump</option>
-                    </select>
-                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" onclick="generateJudgeSheet()">View Sheet</button>
-                </div>
-
-                <div id="judge-print-area" class="print-area bg-white p-8 border shadow-sm mx-auto" style="min-height: 800px;">
-                    <div class="text-center mb-6">
-                        <h1 class="text-3xl font-bold uppercase underline">JUDGE SHEET</h1>
-                        <div class="flex justify-between mt-4 text-lg font-semibold border-b-2 border-black pb-2">
-                            <span id="display-group">Group: ______</span>
-                            <span id="display-event">Event: ______</span>
-                            <span id="display-gender">Gender: ______</span>
-                        </div>
-                    </div>
-                    <table class="w-full text-center border-collapse border-2 border-black">
-                        <thead>
-                            <tr class="bg-gray-100">
-                                <th class="p-3 border border-black w-16">Sl No</th>
-                                <th class="p-3 border border-black w-32">Chest No</th>
-                                <th class="p-3 border border-black">Participant Name</th>
-                                <th class="p-3 border border-black w-32">Performance</th>
-                                <th class="p-3 border border-black w-24">Position</th>
-                            </tr>
-                        </thead>
-                        <tbody id="judge-tbody">
-                            <!-- Blank rows for judge sheet -->
-                        </tbody>
-                    </table>
-                    <div class="flex justify-between mt-16 font-bold">
-                        <span>Signature of Scorer</span>
-                        <span>Signature of Chief Judge</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 4: Chest No. At a Glance -->
-        <div id="chest-glance" class="tab-content">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div class="flex justify-between items-center mb-6 border-b pb-4">
-                    <h2 class="text-2xl font-bold text-gray-800">Chest No. At a Glance</h2>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-center border-collapse border border-gray-300" id="chest-glance-table">
-                        <thead class="bg-indigo-50 text-indigo-900">
-                            <tr>
-                                <th class="p-3 border border-gray-300">Group</th>
-                                <th class="p-3 border border-gray-300">Event</th>
-                                <th class="p-3 border border-gray-300">Gender</th>
-                                <th class="p-3 border border-gray-300">Chest Numbers Assigned</th>
-                            </tr>
-                        </thead>
-                        <tbody id="chest-glance-tbody">
-                            <tr><td colspan="4" class="p-4 text-center text-gray-500">Live data fetching...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-        // Tab Navigation
-        function openTab(tabId, element) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            element.classList.add('active');
-        }
-
-        // ========================================================
-        // ADMIN CONFIGURATION: GOOGLE SHEETS CSV LINKS
-        // Replace these links with the specific 'pub?gid=XXX&output=csv' for each sheet
-        // ========================================================
-        
-        // Default link provided by user (Assuming it contains main data)
-        const URL_ROOT_LIST = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTY-Kkl7vxqyGa68ifHnMDHEGIuGEgAmzTLbmE5_IJ1vk_xbW5VuJK5zCPxMG7FRA/pub?output=csv";
-        
-        // For demonstration, mapping the same URL. 
-        // In real use, append '&gid=YOUR_SHEET_ID' to the URL for each specific sheet!
-        const URL_RESULTS = URL_ROOT_LIST; 
-        const URL_CHEST_GLANCE = URL_ROOT_LIST;
-
-        let allResultData = [];
-
-        async function fetchAllData() {
-            try {
-                // Fetch Root List
-                const resRoot = await fetch(URL_ROOT_LIST);
-                const txtRoot = await resRoot.text();
-                populateTable('root-list-table', txtRoot);
-
-                // Fetch Results
-                const resResult = await fetch(URL_RESULTS);
-                const txtResult = await resResult.text();
-                allResultData = parseCSV(txtResult);
-                populateResults(allResultData);
-                
-                // Populate Chest Glance (mock processing)
-                populateChestGlance(allResultData);
-                
-                // Initialize default Judge Sheet blank rows
-                generateJudgeSheet();
-
-            } catch (err) {
-                console.error("Error fetching live data:", err);
-                document.getElementById('root-list-table').innerHTML = "<tr><td class='p-4 text-red-500'>Failed to load data. Check URL or internet connection.</td></tr>";
-            }
-        }
-
-        function parseCSV(csvText) {
-            return csvText.split("\n").map(row => row.split(","));
-        }
-
-        function populateTable(tableId, csvText) {
-            const rows = parseCSV(csvText);
-            const table = document.getElementById(tableId);
-            let html = "";
-            
-            rows.forEach((row, index) => {
-                if(row.length < 2) return;
-                html += "<tr class='" + (index === 0 ? "bg-gray-100 font-bold" : "border-b hover:bg-gray-50") + "'>";
-                row.forEach(cell => {
-                    let cellTag = index === 0 ? "th" : "td";
-                    html += `<${cellTag} class="p-3 border">${cell.trim()}</${cellTag}>`;
-                });
-                html += "</tr>";
-            });
-            table.innerHTML = html;
-        }
-
-        function populateResults(dataRows) {
-            const tbody = document.getElementById('result-tbody');
-            let html = "";
-            // Assuming Result CSV format: Chest No, Name, Event, Result
-            // If data is generic, we just show it.
-            for(let i=1; i<dataRows.length; i++) {
-                let row = dataRows[i];
-                if(row.length < 2) continue;
-                html += `<tr class="border-b hover:bg-gray-50 data-row">
-                    <td class="p-3 border border-gray-300 font-bold chest-cell">${row[0] || '-'}</td>
-                    <td class="p-3 border border-gray-300">${row[1] || '-'}</td>
-                    <td class="p-3 border border-gray-300">${row[2] || '-'}</td>
-                    <td class="p-3 border border-gray-300 text-green-700 font-semibold">${row[3] || 'Pending'}</td>
-                </tr>`;
-            }
-            if(html === "") html = "<tr><td colspan='4' class='p-4 text-center'>No results uploaded yet.</td></tr>";
-            tbody.innerHTML = html;
-        }
-
-        function searchChestNo() {
-            let input = document.getElementById('chest-search').value.toUpperCase();
-            let rows = document.querySelectorAll('#result-tbody .data-row');
-            
-            rows.forEach(row => {
-                let chestNo = row.querySelector('.chest-cell').innerText.toUpperCase();
-                if (chestNo.includes(input)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        }
-
-        function generateJudgeSheet() {
-            const group = document.getElementById('judge-group-select').value || 'Group A';
-            const event = document.getElementById('judge-event-select').value || '100m Race';
-            
-            document.getElementById('display-group').innerText = `Group: ${group}`;
-            document.getElementById('display-event').innerText = `Event: ${event}`;
-            
-            let tbody = document.getElementById('judge-tbody');
-            let html = "";
-            for(let i=1; i<=15; i++) {
-                html += `
+          </div>
+          <input type="text" id="adminSearch" class="search-input" placeholder="Search to edit..." />
+          <div class="table-wrap admin-table-wrap">
+            <table class="data-table editable" id="adminTable">
+              <thead>
                 <tr>
-                    <td class="p-3 border border-black">${i}</td>
-                    <td class="p-3 border border-black"></td>
-                    <td class="p-3 border border-black text-left"></td>
-                    <td class="p-3 border border-black"></td>
-                    <td class="p-3 border border-black"></td>
-                </tr>`;
-            }
-            tbody.innerHTML = html;
-        }
+                  <th>Sl</th><th>Name</th><th>Class</th><th>Year</th><th>M/F</th>
+                  <th>Father</th><th>Mother</th><th>Address</th><th>D.O.B</th><th>Admission</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="adminTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        function populateChestGlance(dataRows) {
-            // Mock logic: Aggregating chest numbers by Group and Event
-            const tbody = document.getElementById('chest-glance-tbody');
-            tbody.innerHTML = `
-                <tr><td class="p-3 border">Group A</td><td class="p-3 border">100m Race</td><td class="p-3 border">Boys</td><td class="p-3 border font-mono">101, 102, 103, 104, 105</td></tr>
-                <tr><td class="p-3 border">Group A</td><td class="p-3 border">100m Race</td><td class="p-3 border">Girls</td><td class="p-3 border font-mono">201, 202, 203, 204, 205</td></tr>
-                <tr><td class="p-3 border">Group B</td><td class="p-3 border">Long Jump</td><td class="p-3 border">Boys</td><td class="p-3 border font-mono">301, 302, 303, 304, 305</td></tr>
-            `;
-        }
+  </main>
+</div>
 
-        // --- Export Functions ---
-        function exportExcel(divId, filename) {
-            var elt = document.getElementById(divId);
-            var wb = XLSX.utils.table_to_book(elt, {sheet:"Sheet1"});
-            XLSX.writeFile(wb, filename + '.xlsx');
-        }
+<div class="toast" id="toast"></div>
 
-        function exportPDF(divId, filename) {
-            var element = document.getElementById(divId);
-            
-            // Show header for print if hidden
-            let headers = element.querySelectorAll('.print-header');
-            headers.forEach(h => h.classList.remove('hidden'));
+<script>
+window.__STUDENTS__ = [{"sl": 1, "year": "2020", "name": "SOUMYADIP MALIK", "gender": "M", "mother": "CHAMPA MALIK", "father": "SAILEN MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "20-08-2014", "aadhaar": "6017 0962 6020", "admissionDate": "02-01-2020", "ageOnAdmission": "5y,4m,13d", "tc": "", "class": "PP"}, {"sl": 2, "year": "2020", "name": "BIDISHA POREL", "gender": "F", "mother": "RAKHI POREL", "father": "BINOY KRISHNA POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "12-01-2014", "aadhaar": "7941 1878 1121", "admissionDate": "02-01-2020", "ageOnAdmission": "5y,11m,21d", "tc": "", "class": "PP"}, {"sl": 3, "year": "2020", "name": "MEGHNA DIGER", "gender": "F", "mother": "PARBATI DIGER", "father": "DURJOY DIGER", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "28-01-2014", "aadhaar": "8359 1670 2777", "admissionDate": "02-01-2020", "ageOnAdmission": "5y,11m,5d", "tc": "", "class": "PP"}, {"sl": 4, "year": "2020", "name": "SUSMITA MALIK", "gender": "F", "mother": "SASTHI MALIK", "father": "RAGHUNATH MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "17-05-2014", "aadhaar": "6830 5511 0406", "admissionDate": "02-01-2020", "ageOnAdmission": "5y,7m,16d", "tc": "", "class": "PP"}, {"sl": 5, "year": "2020", "name": "SURYA KANTA ROY", "gender": "M", "mother": "KAJAL ROY", "father": "LAKSHMI KANTA ROY", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "08-12-2014", "aadhaar": "6338 3823 8387", "admissionDate": "02-01-2020", "ageOnAdmission": "5y,0m,25d", "tc": "", "class": "PP"}, {"sl": 6, "year": "2020", "name": "ANWESHA MALIK", "gender": "F", "mother": "MAMONI MALIK", "father": "SISIR MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "18-10-2014", "aadhaar": "2874 4614 4942", "admissionDate": "02-01-2020", "ageOnAdmission": "5y,2m,15d", "tc": "", "class": "PP"}, {"sl": 7, "year": "2020", "name": "ANKO MALIK", "gender": "M", "mother": "JHUMPA MALIK", "father": "BHOLANATH MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "24-12-2014", "aadhaar": "5947 0096 3080", "admissionDate": "02-01-2020", "ageOnAdmission": "5y,0m,9d", "tc": "", "class": "PP"}, {"sl": 8, "year": "2019", "name": "ABHIRAJ ROY", "gender": "M", "mother": "APARNA ROY", "father": "NARAN ROY", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "01-07-2013", "aadhaar": "9240 8760 0717", "admissionDate": "02-01-2019", "ageOnAdmission": "5y,6m,1d", "tc": "", "class": "PP"}, {"sl": 9, "year": "2019", "name": "DEBASMITA MALIK", "gender": "F", "mother": "MOYNA MALIK", "father": "ANANDA MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "17-06-2013", "aadhaar": "6730 9021 8102", "admissionDate": "02-01-2019", "ageOnAdmission": "5y,6m,16d", "tc": "", "class": "PP"}, {"sl": 10, "year": "2019", "name": "ARGHYA POREL", "gender": "M", "mother": "SUKTARA POREL", "father": "PALASH POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "06-07-2013", "aadhaar": "3207 3230 8414", "admissionDate": "02-01-2019", "ageOnAdmission": "5y,5m,27d", "tc": "", "class": "PP"}, {"sl": 11, "year": "2019", "name": "RATUL MALIK", "gender": "M", "mother": "KUHELI MALIK", "father": "SAMAR MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "16-11-2013", "aadhaar": "5642 1299 8521", "admissionDate": "02-01-2019", "ageOnAdmission": "5y,1m,17d", "tc": "", "class": "PP"}, {"sl": 12, "year": "2019", "name": "ROKI POREL", "gender": "M", "mother": "SWARNALATA POREL", "father": "BIFAL POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "14-09-2013", "aadhaar": "6593 9428 8781", "admissionDate": "02-01-2019", "ageOnAdmission": "5y,3m,19d", "tc": "", "class": "PP"}, {"sl": 13, "year": "2019", "name": "PINKI POREL", "gender": "F", "mother": "SONAMONI POREL", "father": "HIRU POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "02-09-2013", "aadhaar": "9327 6562 6287", "admissionDate": "02-01-2019", "ageOnAdmission": "5y,4m,0d", "tc": "", "class": "PP"}, {"sl": 14, "year": "2019", "name": "SUBHODIP MALIK", "gender": "M", "mother": "KALPANA MALIK", "father": "RUPCHAND MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "05-02-2013", "aadhaar": "2164 3564 1250", "admissionDate": "02-01-2019", "ageOnAdmission": "5y,10m,28d", "tc": "", "class": "PP"}, {"sl": 15, "year": "2019", "name": "SAJAL DOLUI", "gender": "M", "mother": "PURNIMA DOLUI", "father": "ASHOKE DOLUI", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "25-03-2013", "aadhaar": "", "admissionDate": "02-01-2019", "ageOnAdmission": "5y,9m,8d", "tc": "", "class": "PP"}, {"sl": 16, "year": "2019", "name": "RONI POREL", "gender": "M", "mother": "KARABI POREL", "father": "RAJKUMAR POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "07-04-2013", "aadhaar": "3933 2162 1982", "admissionDate": "02-01-2019", "ageOnAdmission": "5y,8m,26d", "tc": "", "class": "PP"}, {"sl": 17, "year": "2019", "name": "NISHA MALIK", "gender": "F", "mother": "UTTARA MALIK", "father": "DILIP MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "01-10-2013", "aadhaar": "8085 5418 8618", "admissionDate": "02-01-2019", "ageOnAdmission": "5y,3m,1d", "tc": "", "class": "PP"}, {"sl": 18, "year": "2018", "name": "PIYALI MALIK", "gender": "F", "mother": "RINKU MALIK", "father": "TILAK MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "25-08-2012", "aadhaar": "7903 7825 9282", "admissionDate": "02-01-2018", "ageOnAdmission": "5y,4m,8d", "tc": "", "class": "PP"}, {"sl": 19, "year": "2018", "name": "ANUPAM MALIK", "gender": "M", "mother": "MAMONI MALIK", "father": "ALOK MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "11-05-2012", "aadhaar": "5838 0582 4479", "admissionDate": "02-01-2018", "ageOnAdmission": "5y,7m,22d", "tc": "", "class": "PP"}, {"sl": 20, "year": "2018", "name": "LAKSHMI PRAMANIK", "gender": "F", "mother": "ADARI PRAMANIK", "father": "ASIT PRAMANIK", "address": "Kushali, Rajhati Bandar", "dob": "17-09-2012", "aadhaar": "4426 8538 0437", "admissionDate": "08-01-2018", "ageOnAdmission": "5y,3m,22d", "tc": "BPL- KANCHAN PRAMANIK (WB-06-017-009-006/IN16)", "class": "PP"}, {"sl": 21, "year": "2018", "name": "BRINDABAN MALIK", "gender": "M", "mother": "CHHABI MALIK", "father": "BIMAL MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "03-07-2011", "aadhaar": "", "admissionDate": "06-02-2018", "ageOnAdmission": "6y,7m,3d", "tc": "", "class": "I"}, {"sl": 22, "year": "2017", "name": "DEBABRATA ROY", "gender": "M", "mother": "SUDHA ROY", "father": "JHANTU ROY", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "08-02-2011", "aadhaar": "9702 4838 2550", "admissionDate": "02-01-2017", "ageOnAdmission": "5y,10m,25d", "tc": "", "class": "PP"}, {"sl": 23, "year": "2017", "name": "SUJATA ROY", "gender": "F", "mother": "KALPANA ROY", "father": "KARTIK ROY", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "05-06-2011", "aadhaar": "", "admissionDate": "02-01-2017", "ageOnAdmission": "5y,6m,28d", "tc": "", "class": "PP"}, {"sl": 24, "year": "2017", "name": "RIMITA MALIK", "gender": "F", "mother": "KALPANA MALIK", "father": "RUPCHAND MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "18-02-2011", "aadhaar": "8501 4820 3734", "admissionDate": "02-01-2017", "ageOnAdmission": "5y,10m,15d", "tc": "", "class": "PP"}, {"sl": 25, "year": "2017", "name": "PRIYA POREL", "gender": "F", "mother": "SUSHAMA POREL", "father": "SISIR POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "18-02-2011", "aadhaar": "", "admissionDate": "02-01-2017", "ageOnAdmission": "5y,10m,15d", "tc": "", "class": "PP"}, {"sl": 26, "year": "2017", "name": "SAYAN MALIK", "gender": "M", "mother": "KAKULI MALIK", "father": "VIVEK MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "16-05-2011", "aadhaar": "3522 6279 7344", "admissionDate": "02-01-2017", "ageOnAdmission": "5y,7m,17d", "tc": "", "class": "PP"}, {"sl": 27, "year": "2017", "name": "RIYA DIGER", "gender": "F", "mother": "RINKU DIGER", "father": "JHANTU DIGER", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "11-10-2011", "aadhaar": "7865 2136 7262", "admissionDate": "02-01-2017", "ageOnAdmission": "5y,2m,22d", "tc": "", "class": "PP"}, {"sl": 28, "year": "2017", "name": "DIBYENDU MALIK", "gender": "M", "mother": "MAYNA MALIK", "father": "ANANDA MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "29-11-2011", "aadhaar": "7481 7511 1507", "admissionDate": "02-01-2017", "ageOnAdmission": "5y,1m,4d", "tc": "", "class": "PP"}, {"sl": 29, "year": "2017", "name": "PURNIMA POREL", "gender": "F", "mother": "CHANCHALA POREL", "father": "BIDYUT POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "13-08-2011", "aadhaar": "5977 1490 7919", "admissionDate": "02-01-2017", "ageOnAdmission": "5y,4m,20d", "tc": "", "class": "PP"}, {"sl": 30, "year": "2017", "name": "SRABANTI POREL", "gender": "F", "mother": "LAXMI POREL", "father": "MANORANJAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "04-05-2011", "aadhaar": "6017 6418 6594", "admissionDate": "01-02-2017", "ageOnAdmission": "5y,8m,28d", "tc": "", "class": "PP"}, {"sl": 31, "year": "2016", "name": "SURAJ MALIK", "gender": "M", "mother": "SUPRIYA MALIK", "father": "BANAMALI MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "11-03-2010", "aadhaar": "4035 2344 7299", "admissionDate": "02-01-2016", "ageOnAdmission": "5y,9m,22d", "tc": "", "class": "PP"}, {"sl": 32, "year": "2016", "name": "CHANDAN MALIK", "gender": "M", "mother": "KRISHNA MALIK", "father": "DHANANJOY MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "15-08-2010", "aadhaar": "8635 6624 4222", "admissionDate": "02-01-2016", "ageOnAdmission": "5y,4m,18d", "tc": "", "class": "PP"}, {"sl": 33, "year": "2016", "name": "PRITAM DOLUI", "gender": "M", "mother": "LAXMI DOLUI", "father": "BHAKTI DOLUI", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "17-01-2010", "aadhaar": "6843 5931 7518", "admissionDate": "02-01-2016", "ageOnAdmission": "5y,11m,16d", "tc": "", "class": "PP"}, {"sl": 34, "year": "2016", "name": "SRIPARNA POREL", "gender": "F", "mother": "SWARNA POREL", "father": "BIFAL POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "13-08-2010", "aadhaar": "6110 5321 1196", "admissionDate": "02-01-2016", "ageOnAdmission": "5y,4m,20d", "tc": "", "class": "PP"}, {"sl": 35, "year": "2016", "name": "ISHITA MALIK", "gender": "F", "mother": "SASTHI MALIK", "father": "RAGHUNATH MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "04-11-2010", "aadhaar": "6434 6356 4288", "admissionDate": "02-01-2016", "ageOnAdmission": "5y,1m,29d", "tc": "", "class": "PP"}, {"sl": 36, "year": "2016", "name": "SAYAN DOLUI", "gender": "M", "mother": "SUSHAMA DOLUI", "father": "DIBAKAR DOLUI", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "26-02-2009", "aadhaar": "2353 2028 0392", "admissionDate": "02-01-2016", "ageOnAdmission": "6y,10m,7d", "tc": "", "class": "I"}, {"sl": 37, "year": "2016", "name": "TRISHA DUTTA", "gender": "F", "mother": "SUKU DUTTA", "father": "ARABINDA DUTTA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "04-06-2008", "aadhaar": "2693 8006 3568", "admissionDate": "01-08-2016", "ageOnAdmission": "8y,1m,28d", "tc": "", "class": "II"}, {"sl": 38, "year": "2015", "name": "SANCHITA MALIK", "gender": "F", "mother": "CHAMPA MALIK", "father": "SHOILEN MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "12-08-2009", "aadhaar": "8342 0133 9304", "admissionDate": "02-01-2015", "ageOnAdmission": "5y,4m,21d", "tc": "", "class": "PP"}, {"sl": 39, "year": "2015", "name": "TITHI MALIK", "gender": "F", "mother": "UTTARA MALIK", "father": "DILIP MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "25-01-2009", "aadhaar": "8468 3730 3507", "admissionDate": "02-01-2015", "ageOnAdmission": "5y,11m,8d", "tc": "", "class": "PP"}, {"sl": 40, "year": "2015", "name": "JYOTI MALIK", "gender": "F", "mother": "KAKULI MALIK", "father": "VIVEK MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "18-05-2009", "aadhaar": "7609 5566 4790", "admissionDate": "02-01-2015", "ageOnAdmission": "5y,7m,15d", "tc": "", "class": "PP"}, {"sl": 41, "year": "2015", "name": "RAHUL POREL", "gender": "M", "mother": "LAXMI POREL", "father": "BISWANATH POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "24-04-2009", "aadhaar": "2984 2757 8187", "admissionDate": "02-01-2015", "ageOnAdmission": "5y,8m,9d", "tc": "", "class": "PP"}, {"sl": 42, "year": "2015", "name": "ROHIT HAZRA", "gender": "M", "mother": "BANDANA HAZRA", "father": "SUNIL HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "06-11-2009", "aadhaar": "3981 2922 8324", "admissionDate": "02-01-2015", "ageOnAdmission": "5y,1m,27d", "tc": "", "class": "PP"}, {"sl": 43, "year": "2015", "name": "ASHA DOLUI", "gender": "F", "mother": "PURNIMA DOLUI", "father": "ASHOK DOLUI", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "29-08-2009", "aadhaar": "5483 8237 3141", "admissionDate": "02-01-2015", "ageOnAdmission": "5y,4m,4d", "tc": "", "class": "PP"}, {"sl": 44, "year": "2014", "name": "SUBRATA ROY", "gender": "M", "mother": "SUDHA ROY", "father": "JHANTU ROY", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "04-09-2008", "aadhaar": "5103 7201 2613", "admissionDate": "02-01-2014", "ageOnAdmission": "5y,3m,29d", "tc": "", "class": "PP"}, {"sl": 45, "year": "2014", "name": "ANNAPURNA POREL", "gender": "F", "mother": "CHANCHALA POREL", "father": "BIDYUT POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "09-10-2008", "aadhaar": "", "admissionDate": "02-01-2014", "ageOnAdmission": "5y,2m,24d", "tc": "", "class": "PP"}, {"sl": 46, "year": "2014", "name": "RAJKUMAR ROY", "gender": "M", "mother": "KALPANA ROY", "father": "KARTIK ROY", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "23-09-2008", "aadhaar": "2409 2848 7346", "admissionDate": "02-01-2014", "ageOnAdmission": "5y,3m,10d", "tc": "", "class": "PP"}, {"sl": 47, "year": "2014", "name": "DEBJIT MALIK", "gender": "M", "mother": "CHHABITA MALIK", "father": "GOPINATH MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "12-03-2008", "aadhaar": "4783 8490 6202", "admissionDate": "02-01-2014", "ageOnAdmission": "5y,9m,21d", "tc": "", "class": "PP"}, {"sl": 48, "year": "2013", "name": "SUPARNA POREL", "gender": "F", "mother": "LAXMI POREL", "father": "MANORAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "18-05-2007", "aadhaar": "8736 7248 6982", "admissionDate": "02-01-2013", "ageOnAdmission": "5y,7m,15d", "tc": "", "class": "PP"}, {"sl": 49, "year": "2013", "name": "RACHANA POREL", "gender": "F", "mother": "KAJOL POREL", "father": "LAXMAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "24-07-2007", "aadhaar": "9960 4277 2951", "admissionDate": "02-01-2013", "ageOnAdmission": "5y,5m,9d", "tc": "", "class": "PP"}, {"sl": 3, "year": "2013", "name": "PRIYANKA BHANGI", "gender": "F", "mother": "MAYNA BHANGI", "father": "RABIN BHANGI", "address": "Lausar,Sonatikri", "dob": "15-01-2006", "aadhaar": "", "admissionDate": "02-01-2013", "ageOnAdmission": "6y,11m,18d", "tc": "prev.sch,Lausar Brajadulal Pry. School", "class": "III"}, {"sl": 4, "year": "2013", "name": "PRIYA DIGER", "gender": "F", "mother": "SONALI DIGER", "father": "TARAKNATH DIGER", "address": "Niranjanbati", "dob": "01-10-2007", "aadhaar": "", "admissionDate": "01-04-2013", "ageOnAdmission": "5y,6m,0d", "tc": "", "class": "PP"}, {"sl": 1, "year": "2012", "name": "JHILIK HAZRA", "gender": "F", "mother": "ANJANA HAZRA", "father": "ANIL HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "03-05-2007", "aadhaar": "", "admissionDate": "02-01-2012", "ageOnAdmission": "4y,7m,30d", "tc": "", "class": "I"}, {"sl": 2, "year": "2012", "name": "SANJOY HAZRA", "gender": "M", "mother": "UTTARA HAZRA", "father": "SUKUMAR HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "11-07-2004", "aadhaar": "", "admissionDate": "02-01-2012", "ageOnAdmission": "7y,5m,22d", "tc": "", "class": "I"}, {"sl": 1, "year": "2011-12", "name": "BISWAJIT MALIK", "gender": "M", "mother": "CHHABITA MALIK", "father": "GOPINATH MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "25-07-2005", "aadhaar": "", "admissionDate": "01-02-2011", "ageOnAdmission": "5y,6m,7d", "tc": "", "class": "I"}, {"sl": 2, "year": "2011-12", "name": "PALLABI POREL", "gender": "F", "mother": "LAXMI POREL", "father": "BISWANATH POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "14-10-2004", "aadhaar": "", "admissionDate": "01-02-2011", "ageOnAdmission": "6y,3m,18d", "tc": "", "class": "I"}, {"sl": 3, "year": "2011-12", "name": "MANIMALA ROY", "gender": "F", "mother": "ANNAPURNA ROY", "father": "TARAPADA ROY", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "24-09-2004", "aadhaar": "", "admissionDate": "01-02-2011", "ageOnAdmission": "6y,4m,8d", "tc": "", "class": "I"}, {"sl": 4, "year": "2011-12", "name": "KADAM MALIK", "gender": "F", "mother": "KALI MALIK", "father": "SHAMBHU MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "25-04-2005", "aadhaar": "", "admissionDate": "01-02-2011", "ageOnAdmission": "5y,9m,7d", "tc": "", "class": "I"}, {"sl": 5, "year": "2011-12", "name": "SANJOY HAZRA", "gender": "M", "mother": "UTTARA HAZRA", "father": "SUKUMAR HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "17-11-2004", "aadhaar": "", "admissionDate": "01-02-2011", "ageOnAdmission": "6y,2m,15d", "tc": "", "class": "I"}, {"sl": 6, "year": "2011-12", "name": "NARAYAN HAZRA", "gender": "M", "mother": "PUTUL HAZRA", "father": "UTTAM HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "25-04-2006", "aadhaar": "", "admissionDate": "01-02-2011", "ageOnAdmission": "4y,9m,7d", "tc": "", "class": "I"}, {"sl": 7, "year": "2011-12", "name": "SUBHAJIT MALIK", "gender": "M", "mother": "SUPRIYA MALIK", "father": "BANAMALI MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "17-07-2006", "aadhaar": "", "admissionDate": "14-07-2011", "ageOnAdmission": "4y,11m,27d", "tc": "", "class": "I"}, {"sl": 8, "year": "2011-12", "name": "PURNIMA DIGER", "gender": "F", "mother": "RINKU DIGER", "father": "JHANTU DIGER", "address": "Pilkhan,Pilkhan", "dob": "03-11-2006", "aadhaar": "", "admissionDate": "14-07-2011", "ageOnAdmission": "4y,8m,11d", "tc": "", "class": "I"}, {"sl": 9, "year": "2011-12", "name": "DEBIKA SARDAR", "gender": "F", "mother": "DEBJANI SARDAR", "father": "DIPAK SARDAR", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "09-06-2007", "aadhaar": "", "admissionDate": "14-07-2011", "ageOnAdmission": "4y,1m,5d", "tc": "", "class": "I"}, {"sl": 10, "year": "2011-12", "name": "AKASH DIGER", "gender": "M", "mother": "SONALI DIGER", "father": "TARAKNATH DIGER", "address": "Niranjanbati", "dob": "02-05-2005", "aadhaar": "", "admissionDate": "14-07-2011", "ageOnAdmission": "6y,2m,12d", "tc": "", "class": "I"}, {"sl": 11, "year": "2011-12", "name": "SONALI HAZRA", "gender": "F", "mother": "SHAMITA HAZRA", "father": "DUDKUMAR HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "10-02-2007", "aadhaar": "", "admissionDate": "14-07-2011", "ageOnAdmission": "4y,5m,4d", "tc": "", "class": "I"}, {"sl": 12, "year": "2011-12", "name": "NAMITA MALIK", "gender": "F", "mother": "UTTARA MALIK", "father": "DILIP MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "05-02-2007", "aadhaar": "", "admissionDate": "14-07-2011", "ageOnAdmission": "4y,5m,9d", "tc": "", "class": "I"}, {"sl": 13, "year": "2011-12", "name": "SANTANU POREL", "gender": "M", "mother": "SABITRI POREL", "father": "SANKAR POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "02-11-2005", "aadhaar": "", "admissionDate": "15-07-2011", "ageOnAdmission": "5y,8m,13d", "tc": "", "class": "I"}, {"sl": 14, "year": "2011-12", "name": "NISHA DOLUI", "gender": "F", "mother": "SUSHAMA DOLUI", "father": "DIBAKAR DOLUI", "address": "Kaknan,Bandar", "dob": "11-03-2007", "aadhaar": "", "admissionDate": "15-07-2011", "ageOnAdmission": "4y,4m,4d", "tc": "", "class": "I"}, {"sl": 15, "year": "2011-12", "name": "ANINDITA DOLUI", "gender": "F", "mother": "BULA DOLUI", "father": "ASTA DOLUI", "address": "Sabalsinghapur", "dob": "10-10-2005", "aadhaar": "", "admissionDate": "15-07-2011", "ageOnAdmission": "5y,9m,5d", "tc": "", "class": "I"}, {"sl": 1, "year": "2010-11", "name": "SUDIP HAZRA", "gender": "M", "mother": "SHAMITA HAZRA", "father": "DUDKUMAR HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "27-06-2004", "aadhaar": "", "admissionDate": "01-03-2010", "ageOnAdmission": "5y,8m,2d", "tc": "", "class": "I"}, {"sl": 2, "year": "2010-11", "name": "PALI HAZRA", "gender": "F", "mother": "ANJANA HAZRA", "father": "ANIL HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "26-11-2004", "aadhaar": "", "admissionDate": "01-03-2010", "ageOnAdmission": "5y,3m,3d", "tc": "", "class": "I"}, {"sl": 3, "year": "2010-11", "name": "PRASANTA POREL", "gender": "M", "mother": "MALATI POREL", "father": "SWAPAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "17-11-2003", "aadhaar": "", "admissionDate": "01-03-2010", "ageOnAdmission": "6y,3m,12d", "tc": "", "class": "I"}, {"sl": 4, "year": "2010-11", "name": "ABHIJIT MALIK", "gender": "M", "mother": "MADHABI MALIK", "father": "RABINDRA MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "17-01-2004", "aadhaar": "", "admissionDate": "01-03-2010", "ageOnAdmission": "6y,1m,12d", "tc": "", "class": "I"}, {"sl": 5, "year": "2010-11", "name": "RIMPA HAZRA", "gender": "F", "mother": "BANDANA HAZRA", "father": "SUNIL HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "09-12-2003", "aadhaar": "", "admissionDate": "01-03-2010", "ageOnAdmission": "6y,2m,20d", "tc": "", "class": "I"}, {"sl": 6, "year": "2010-11", "name": "JABA HAZRA", "gender": "F", "mother": "PUTUL HAZRA", "father": "UTTAM HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "28-09-2003", "aadhaar": "", "admissionDate": "01-03-2010", "ageOnAdmission": "6y,5m,1d", "tc": "", "class": "I"}, {"sl": 7, "year": "2010-11", "name": "NETAI MALIK", "gender": "M", "mother": null, "father": "RANAJIT MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "30-05-2002", "aadhaar": "", "admissionDate": "01-03-2010", "ageOnAdmission": "7y,9m,-1d", "tc": "", "class": "I"}, {"sl": 8, "year": "2010-11", "name": "JITU POREL", "gender": "M", "mother": null, "father": "HARIPADA POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "13-03-2004", "aadhaar": "", "admissionDate": "01-03-2010", "ageOnAdmission": "5y,11m,16d", "tc": "", "class": "I"}, {"sl": 9, "year": "2010-11", "name": "SHEULI DOLUI", "gender": "F", "mother": "PURNIMA DOLUI", "father": "ASHOK DOLUI", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "31-05-2004", "aadhaar": "", "admissionDate": "01-03-2010", "ageOnAdmission": "5y,9m,-2d", "tc": "", "class": "I"}, {"sl": 1, "year": "2009-10", "name": "SUBINAL MALIK", "gender": "M", "mother": "SUDAKSHINA MALIK", "father": "BIMAL MALIK", "address": "Pilkhan,Pilkhan", "dob": "25-10-1999", "aadhaar": "", "admissionDate": "02-05-2009", "ageOnAdmission": "9y,6m,7d", "tc": "", "class": "III"}, {"sl": 2, "year": "2009-10", "name": "UJJWAL MALIK", "gender": "M", "mother": "PRATIMA MALIK", "father": "BANSHI MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "28-01-2003", "aadhaar": "", "admissionDate": "02-05-2009", "ageOnAdmission": "6y,3m,4d", "tc": "", "class": "I"}, {"sl": 3, "year": "2009-10", "name": "BISHNUPRIYA DOLUI", "gender": "F", "mother": null, "father": "GHANTESWAR DOLUI", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "22-07-2003", "aadhaar": "", "admissionDate": "02-05-2009", "ageOnAdmission": "5y,9m,10d", "tc": "", "class": "I"}, {"sl": 4, "year": "2009-10", "name": "KABITA MALIK", "gender": "F", "mother": "UTTARA MALIK", "father": "DILIP MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "11-01-2003", "aadhaar": "", "admissionDate": "02-05-2009", "ageOnAdmission": "6y,3m,21d", "tc": "", "class": "I"}, {"sl": 5, "year": "2009-10", "name": "GOUR DIGER", "gender": "M", "mother": null, "father": "PARESH DIGER", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "20-10-2003", "aadhaar": "", "admissionDate": "02-05-2009", "ageOnAdmission": "5y,6m,12d", "tc": "", "class": "I"}, {"sl": 6, "year": "2009-10", "name": "SRABANTI DOLUI", "gender": "F", "mother": "PURNIMA DOLUI", "father": "ASHOK DOLUI", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "08-11-2002", "aadhaar": "", "admissionDate": "02-05-2009", "ageOnAdmission": "6y,5m,24d", "tc": "", "class": "I"}, {"sl": 7, "year": "2009-10", "name": "RAKHI BARDOLUI", "gender": "F", "mother": null, "father": "SWADESH BARDOLUI", "address": "Gatal,konnagar W Med", "dob": "11-11-2003", "aadhaar": "", "admissionDate": "02-05-2009", "ageOnAdmission": "5y,5m,21d", "tc": "", "class": "I"}, {"sl": 8, "year": "2009-10", "name": "SUBRATA POREL", "gender": "M", "mother": "LAXMI POREL", "father": "MANORANJAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "21-02-2003", "aadhaar": "", "admissionDate": "02-05-2009", "ageOnAdmission": "6y,2m,11d", "tc": "", "class": "I"}, {"sl": 9, "year": "2009-10", "name": "DOLI POREL", "gender": "F", "mother": "LAXMI POREL", "father": "BISWANATH POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "28-01-2003", "aadhaar": "", "admissionDate": "02-05-2009", "ageOnAdmission": "6y,3m,4d", "tc": "", "class": "I"}, {"sl": 10, "year": "2009-10", "name": "MANGAL POREL", "gender": "M", "mother": "UJJWALA POREL", "father": "TARAPADA POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "05-11-2003", "aadhaar": "", "admissionDate": "02-05-2009", "ageOnAdmission": "5y,5m,27d", "tc": "", "class": "I"}, {"sl": 11, "year": "2009-10", "name": "SONALI ROY", "gender": "F", "mother": "KRISHNA ROY", "father": "LALTU ROY", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "19-11-2002", "aadhaar": "", "admissionDate": "02-05-2009", "ageOnAdmission": "6y,5m,13d", "tc": "", "class": "I"}, {"sl": 12, "year": "2009-10", "name": "BEAUTI POREL", "gender": "F", "mother": "APARNA POREL", "father": "BARUN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "19-09-2003", "aadhaar": "", "admissionDate": "02-05-2009", "ageOnAdmission": "5y,7m,13d", "tc": "", "class": "I"}, {"sl": 1, "year": "2008-09", "name": "AKASH POREL", "gender": "M", "mother": null, "father": "HARIPADA POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "18-12-2002", "aadhaar": "", "admissionDate": "02-05-2008", "ageOnAdmission": "5y,4m,14d", "tc": "", "class": "I"}, {"sl": 2, "year": "2008-09", "name": "HEMANTA POREL", "gender": "M", "mother": "MALATI POREL", "father": "SWAPAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "03-11-2001", "aadhaar": "", "admissionDate": "02-05-2008", "ageOnAdmission": "6y,5m,29d", "tc": "", "class": "I"}, {"sl": 3, "year": "2008-09", "name": "DINESH DIGER", "gender": "M", "mother": null, "father": "UTTAM DIGER", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "14-12-2001", "aadhaar": "", "admissionDate": "02-05-2008", "ageOnAdmission": "6y,4m,18d", "tc": "", "class": "I"}, {"sl": 4, "year": "2008-09", "name": "SUBHANKAR POREL", "gender": "M", "mother": "SABITRI POREL", "father": "SANKAR POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "22-05-2002", "aadhaar": "", "admissionDate": "02-05-2008", "ageOnAdmission": "5y,11m,10d", "tc": "", "class": "I"}, {"sl": 5, "year": "2008-09", "name": "MANGAL DIGER", "gender": "M", "mother": null, "father": "BABLU DIGER", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "10-09-2002", "aadhaar": "", "admissionDate": "02-05-2008", "ageOnAdmission": "5y,7m,22d", "tc": "", "class": "I"}, {"sl": 6, "year": "2008-09", "name": "MANDIRA POREL", "gender": "F", "mother": "KAJOL POREL", "father": "LAXMAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "20-06-2002", "aadhaar": "", "admissionDate": "02-05-2008", "ageOnAdmission": "5y,10m,12d", "tc": "", "class": "I"}, {"sl": 7, "year": "2008-09", "name": "ANJANA SINGH", "gender": "F", "mother": null, "father": "MILAN SINGH", "address": "Kalta,Kanaipur,Goghat", "dob": "15-06-2002", "aadhaar": "", "admissionDate": "02-05-2008", "ageOnAdmission": "5y,10m,17d", "tc": "", "class": "I"}, {"sl": 8, "year": "2008-09", "name": "SHITAL HAZRA", "gender": "M", "mother": "UTTARA HAZRA", "father": "SUKUMAR HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "29-09-2001", "aadhaar": "", "admissionDate": "02-05-2008", "ageOnAdmission": "6y,7m,3d", "tc": "", "class": "I"}, {"sl": 1, "year": "2007-08", "name": "PALASH ROY", "gender": "M", "mother": "KRISHNA ROY", "father": "LALTU ROY", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "05-02-2001", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "6y,2m,28d", "tc": "", "class": "I"}, {"sl": 2, "year": "2007-08", "name": "PAPIYA HAZRA", "gender": "F", "mother": "SHAMITA HAZRA", "father": "DUDKUMAR HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "30-10-2000", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "6y,6m,3d", "tc": "", "class": "I"}, {"sl": 3, "year": "2007-08", "name": "KRISHNA SANTRA", "gender": "M", "mother": null, "father": "SUFAL SANTRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "07-05-2000", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "6y,11m,26d", "tc": "", "class": "I"}, {"sl": 4, "year": "2007-08", "name": "SUPARNA MALIK", "gender": "F", "mother": null, "father": "RANAJIT MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "03-10-2001", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "5y,7m,0d", "tc": "", "class": "I"}, {"sl": 5, "year": "2007-08", "name": "SUJIT MALIK", "gender": "M", "mother": "KRISHNA MALIK", "father": "UTTAM MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "15-04-2001", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "6y,0m,18d", "tc": "", "class": "I"}, {"sl": 6, "year": "2007-08", "name": "SUPRIYA DIGER", "gender": "F", "mother": null, "father": "PARESH DIGER", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "02-11-2000", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "6y,6m,1d", "tc": "", "class": "I"}, {"sl": 7, "year": "2007-08", "name": "SURAJIT MALIK", "gender": "M", "mother": "KRISHNA MALIK", "father": "UTTAM MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "15-04-2001", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "6y,0m,18d", "tc": "", "class": "I"}, {"sl": 8, "year": "2007-08", "name": "SHANTA POREL", "gender": "M", "mother": "JHARNA POREL", "father": "VAJAHARI POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "24-07-2001", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "5y,9m,9d", "tc": "", "class": "I"}, {"sl": 9, "year": "2007-08", "name": "AMIT MALIK", "gender": "M", "mother": null, "father": "SHIBU MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "10-10-2001", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "5y,6m,23d", "tc": "", "class": "I"}, {"sl": 10, "year": "2007-08", "name": "SHILPA DIGER", "gender": "F", "mother": null, "father": "BABLU DIGER", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "12-06-2001", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "5y,10m,21d", "tc": "", "class": "I"}, {"sl": 11, "year": "2007-08", "name": "MANSA HAZRA", "gender": "F", "mother": "PUTUL HAZRA", "father": "UTTAM HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "28-07-2001", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "5y,9m,5d", "tc": "", "class": "I"}, {"sl": 12, "year": "2007-08", "name": "CHANPA MALIK", "gender": "F", "mother": null, "father": "NIKHIL MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "15-08-2001", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "5y,8m,18d", "tc": "", "class": "I"}, {"sl": 13, "year": "2007-08", "name": "SREYA DOLUI", "gender": "F", "mother": "PURNIMA DOLUI", "father": "ASHOK DOLUI", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "28-12-2000", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "6y,4m,5d", "tc": "", "class": "I"}, {"sl": 14, "year": "2007-08", "name": "RAKESH POREL", "gender": "M", "mother": "APARNA POREL", "father": "BARUN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "16-05-2001", "aadhaar": "", "admissionDate": "03-05-2007", "ageOnAdmission": "5y,11m,17d", "tc": "", "class": "I"}, {"sl": 1, "year": "2006-07", "name": "PRASANTA MALIK", "gender": "M", "mother": "MADHABI MALIK", "father": "RABINDRA MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "13-11-1999", "aadhaar": "", "admissionDate": "02-05-2006", "ageOnAdmission": "6y,5m,19d", "tc": "", "class": "I"}, {"sl": 2, "year": "2006-07", "name": "PRIYANKA MALIK", "gender": "F", "mother": null, "father": "KUSADHWAJ MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "06-08-2000", "aadhaar": "", "admissionDate": "02-05-2006", "ageOnAdmission": "5y,8m,26d", "tc": "", "class": "I"}, {"sl": 3, "year": "2006-07", "name": "MANSA MALIK", "gender": "M", "mother": null, "father": "SIBU MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "28-11-1999", "aadhaar": "", "admissionDate": "02-05-2006", "ageOnAdmission": "6y,5m,4d", "tc": "", "class": "I"}, {"sl": 4, "year": "2006-07", "name": "PAYEL POREL", "gender": "F", "mother": "UJJWALA POREL", "father": "TARAPADA POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "16-08-2000", "aadhaar": "", "admissionDate": "02-05-2006", "ageOnAdmission": "5y,8m,16d", "tc": "", "class": "I"}, {"sl": 5, "year": "2006-07", "name": "SUJAN DOLUI", "gender": "M", "mother": null, "father": "ASHOK DOLUI", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "03-03-2000", "aadhaar": "", "admissionDate": "02-05-2006", "ageOnAdmission": "6y,1m,29d", "tc": "", "class": "I"}, {"sl": 6, "year": "2006-07", "name": "APARNA MALIK", "gender": "F", "mother": null, "father": "KASHINATH MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "17-11-1999", "aadhaar": "", "admissionDate": "02-05-2006", "ageOnAdmission": "6y,5m,15d", "tc": "", "class": "I"}, {"sl": 7, "year": "2006-07", "name": "SANJOY POREL", "gender": "M", "mother": null, "father": "RATAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "14-02-2000", "aadhaar": "", "admissionDate": "02-05-2006", "ageOnAdmission": "6y,2m,18d", "tc": "", "class": "I"}, {"sl": 8, "year": "2006-07", "name": "SANTOHSH HAZRA", "gender": "M", "mother": "GEETA HAZRA", "father": "ANUP HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "15-12-1998", "aadhaar": "", "admissionDate": "02-05-2006", "ageOnAdmission": "7y,4m,17d", "tc": "", "class": "II"}, {"sl": 1, "year": "2005-06", "name": "ANTARA MALIK", "gender": "F", "mother": null, "father": "BANSHI MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "19-02-1998", "aadhaar": "", "admissionDate": "02-05-2005", "ageOnAdmission": "7y,2m,13d", "tc": "", "class": "I"}, {"sl": 2, "year": "2005-06", "name": "KAKULI MALIK", "gender": "F", "mother": null, "father": "SISIR MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "01-07-1999", "aadhaar": "", "admissionDate": "02-05-2005", "ageOnAdmission": "5y,10m,1d", "tc": "", "class": "I"}, {"sl": 3, "year": "2005-06", "name": "SUKUMAR ROY", "gender": "M", "mother": null, "father": "KALIPADA ROY", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "15-12-1999", "aadhaar": "", "admissionDate": "02-05-2005", "ageOnAdmission": "5y,4m,17d", "tc": "", "class": "I"}, {"sl": 4, "year": "2005-06", "name": "PARITOSH HAZRA", "gender": "M", "mother": "GEETA HAZRA", "father": "ANUP HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "06-09-1999", "aadhaar": "", "admissionDate": "02-05-2005", "ageOnAdmission": "5y,7m,26d", "tc": "", "class": "I"}, {"sl": 5, "year": "2005-06", "name": "NETAI DIGER", "gender": "M", "mother": null, "father": "NIDHAN DIGER", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "20-02-2000", "aadhaar": "", "admissionDate": "02-05-2005", "ageOnAdmission": "5y,2m,12d", "tc": "", "class": "I"}, {"sl": 6, "year": "2005-06", "name": "LAXMIKANTA DIGER", "gender": "M", "mother": null, "father": "SANNYASI DIGER", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "18-06-1999", "aadhaar": "", "admissionDate": "02-05-2005", "ageOnAdmission": "5y,10m,14d", "tc": "", "class": "I"}, {"sl": 7, "year": "2005-06", "name": "SHILPA POREL", "gender": "F", "mother": "RANU POREL", "father": "BRINDABAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "18-03-2000", "aadhaar": "", "admissionDate": "02-05-2005", "ageOnAdmission": "5y,1m,14d", "tc": "", "class": "I"}, {"sl": 8, "year": "2005-06", "name": "TUSI ROY", "gender": "F", "mother": "ANNAPURNA ROY", "father": "TARAPADA ROY", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "10-08-1999", "aadhaar": "", "admissionDate": "02-05-2005", "ageOnAdmission": "5y,8m,22d", "tc": "", "class": "I"}, {"sl": 1, "year": "2004-05", "name": "KAJAL MALIK", "gender": "M", "mother": null, "father": "KUSODHWAJ MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "16-03-1998", "aadhaar": "", "admissionDate": "03-05-2004", "ageOnAdmission": "6y,1m,17d", "tc": "", "class": "II"}, {"sl": 2, "year": "2004-05", "name": "APARNA MALIK", "gender": "F", "mother": null, "father": "RANAJIT MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "21-09-1997", "aadhaar": "", "admissionDate": "07-05-2004", "ageOnAdmission": "6y,7m,16d", "tc": "", "class": "I"}, {"sl": 3, "year": "2004-05", "name": "RAMA POREL", "gender": "F", "mother": "SABITRI POREL", "father": "SANKAR POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "21-01-1998", "aadhaar": "", "admissionDate": "19-05-2004", "ageOnAdmission": "6y,3m,28d", "tc": "", "class": "I"}, {"sl": 4, "year": "2004-05", "name": "ARCHANA SING", "gender": "F", "mother": null, "father": "MILAN SING", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "17-03-1999", "aadhaar": "", "admissionDate": "20-05-2004", "ageOnAdmission": "5y,2m,3d", "tc": "", "class": "I"}, {"sl": 5, "year": "2004-05", "name": "LILA POREL", "gender": "F", "mother": null, "father": "BANSHI POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "27-11-1997", "aadhaar": "", "admissionDate": "20-05-2004", "ageOnAdmission": "6y,5m,23d", "tc": "", "class": "I"}, {"sl": 6, "year": "2004-05", "name": "SOMA POREL", "gender": "F", "mother": null, "father": "SANKAR POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "10-04-1997", "aadhaar": "", "admissionDate": "21-05-2004", "ageOnAdmission": "7y,1m,11d", "tc": "", "class": "I"}, {"sl": 7, "year": "2004-05", "name": "DOLAN MALIK", "gender": "F", "mother": null, "father": "NIKHIL MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "11-03-1999", "aadhaar": "", "admissionDate": "21-05-2004", "ageOnAdmission": "5y,2m,10d", "tc": "", "class": "I"}, {"sl": 8, "year": "2004-05", "name": "SUDIPA MALIK", "gender": "F", "mother": null, "father": "ASIT MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "12-03-1999", "aadhaar": "", "admissionDate": "21-05-2004", "ageOnAdmission": "5y,2m,9d", "tc": "", "class": "I"}, {"sl": 9, "year": "2004-05", "name": "MUKTA POREL", "gender": "M", "mother": "UJJWALA POREL", "father": "TARAPADA POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "10-03-1999", "aadhaar": "", "admissionDate": "21-05-2004", "ageOnAdmission": "5y,2m,11d", "tc": "", "class": "I"}, {"sl": 10, "year": "2004-05", "name": "FULESWARI POREL", "gender": "F", "mother": "KAJOL POREL", "father": "LAXMAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "09-01-1998", "aadhaar": "", "admissionDate": "21-05-2004", "ageOnAdmission": "6y,4m,12d", "tc": "", "class": "I"}, {"sl": 11, "year": "2004-05", "name": "RAJESWARI POREL", "gender": "F", "mother": "KAJOL POREL", "father": "LAXMAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "17-04-1999", "aadhaar": "", "admissionDate": "21-05-2004", "ageOnAdmission": "5y,1m,4d", "tc": "", "class": "I"}, {"sl": 1, "year": "2003-04", "name": "SUBHANKAR MALIK", "gender": "M", "mother": null, "father": "SWAPAN MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "14-10-1996", "aadhaar": "", "admissionDate": "02-05-2003", "ageOnAdmission": "6y,6m,18d", "tc": "", "class": "I"}, {"sl": 2, "year": "2003-04", "name": "BIJOY POREL", "gender": "M", "mother": null, "father": "GOBINDA POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "16-01-1997", "aadhaar": "", "admissionDate": "02-05-2003", "ageOnAdmission": "6y,3m,16d", "tc": "", "class": "I"}, {"sl": 3, "year": "2003-04", "name": "MANSA POREL", "gender": "F", "mother": null, "father": "RUPCHAND POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "11-11-1997", "aadhaar": "", "admissionDate": "03-05-2003", "ageOnAdmission": "5y,5m,22d", "tc": "", "class": "I"}, {"sl": 4, "year": "2003-04", "name": "KRISHNAKAMAL HAZRA", "gender": "M", "mother": null, "father": "DUDKUMAR HAZRA", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "09-10-1997", "aadhaar": "", "admissionDate": "06-05-2003", "ageOnAdmission": "5y,6m,27d", "tc": "", "class": "I"}, {"sl": 5, "year": "2003-04", "name": "PUJA MALIK", "gender": "F", "mother": null, "father": "UTTAM MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "10-12-1996", "aadhaar": "", "admissionDate": "07-05-2003", "ageOnAdmission": "6y,4m,27d", "tc": "", "class": "I"}, {"sl": 6, "year": "2003-04", "name": "RAJESH POREL", "gender": "M", "mother": null, "father": "ARUN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "02-01-1998", "aadhaar": "", "admissionDate": "23-05-2003", "ageOnAdmission": "5y,4m,21d", "tc": "", "class": "I"}, {"sl": 7, "year": "2003-04", "name": "SANAKA POREL", "gender": "F", "mother": null, "father": "RATAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "10-02-1998", "aadhaar": "", "admissionDate": "23-05-2003", "ageOnAdmission": "5y,3m,13d", "tc": "", "class": "I"}, {"sl": 8, "year": "2003-04", "name": "SMITA BHATTACHARYA", "gender": "F", "mother": null, "father": "SWADESH BHATTACHARYA", "address": "Arambagh, Vivekananda plly", "dob": "19-08-1994", "aadhaar": "", "admissionDate": "28-05-2003", "ageOnAdmission": "8y,9m,9d", "tc": "", "class": "IV"}, {"sl": 1, "year": "2002-03", "name": "PRABIR MALIK", "gender": "M", "mother": null, "father": "MANORANJAN MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "15-01-1995", "aadhaar": "", "admissionDate": "03-05-2002", "ageOnAdmission": "7y,3m,18d", "tc": "", "class": "I"}, {"sl": 2, "year": "2002-03", "name": "SRIMANTA POREL", "gender": "M", "mother": null, "father": "SIBARAM POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "06-03-1996", "aadhaar": "", "admissionDate": "10-05-2002", "ageOnAdmission": "6y,2m,4d", "tc": "", "class": "I"}, {"sl": 3, "year": "2002-03", "name": "KRISHNA POREL", "gender": "F", "mother": null, "father": "SIBARAM POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "03-01-1993", "aadhaar": "", "admissionDate": "10-05-2002", "ageOnAdmission": "9y,4m,7d", "tc": "", "class": "I"}, {"sl": 4, "year": "2002-03", "name": "DIPANKAR MALIK", "gender": "M", "mother": null, "father": "ASIT MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "25-09-1995", "aadhaar": "", "admissionDate": "10-05-2002", "ageOnAdmission": "6y,7m,15d", "tc": "", "class": "I"}, {"sl": 5, "year": "2002-03", "name": "JITENDRANATH MALIK", "gender": "M", "mother": null, "father": "MANSA MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "02-03-1996", "aadhaar": "", "admissionDate": "14-05-2002", "ageOnAdmission": "6y,2m,12d", "tc": "", "class": "I"}, {"sl": 6, "year": "2002-03", "name": "SOUMEN DIGER", "gender": "M", "mother": null, "father": "SANNYASI DIGER", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "11-01-1997", "aadhaar": "", "admissionDate": "18-05-2002", "ageOnAdmission": "5y,4m,7d", "tc": "", "class": "I"}, {"sl": 1, "year": "2001-02", "name": "SURESH KUMAR DOLUI", "gender": "M", "mother": null, "father": "ASHOK DOLUI", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "02-03-1996", "aadhaar": "", "admissionDate": "04-05-2001", "ageOnAdmission": "5y,2m,2d", "tc": "", "class": "I"}, {"sl": 2, "year": "2001-02", "name": "NAYANTARA MALIK", "gender": "F", "mother": null, "father": "BANSHI MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "02-02-1996", "aadhaar": "", "admissionDate": "04-05-2001", "ageOnAdmission": "5y,3m,2d", "tc": "", "class": "I"}, {"sl": 3, "year": "2001-02", "name": "ASHRUKANA POREL", "gender": "F", "mother": null, "father": null, "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "01-03-1996", "aadhaar": "", "admissionDate": "04-05-2001", "ageOnAdmission": "5y,2m,3d", "tc": "", "class": "I"}, {"sl": 4, "year": "2001-02", "name": "MANIK POREL", "gender": "M", "mother": null, "father": "TARAPADA POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "01-03-1995", "aadhaar": "", "admissionDate": "04-05-2001", "ageOnAdmission": "6y,2m,3d", "tc": "", "class": "I"}, {"sl": 5, "year": "2001-02", "name": "MANTI POREL", "gender": "F", "mother": null, "father": "ARUN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "02-02-1996", "aadhaar": "", "admissionDate": "04-05-2001", "ageOnAdmission": "5y,3m,2d", "tc": "", "class": "I"}, {"sl": 6, "year": "2001-02", "name": "MALOY POREL", "gender": "M", "mother": null, "father": "RATAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "28-05-1991", "aadhaar": "", "admissionDate": "15-05-2001", "ageOnAdmission": "9y,11m,17d", "tc": "", "class": "IV"}, {"sl": 1, "year": "2000-01", "name": "MAHUYA POREL", "gender": "F", "mother": null, "father": "GOBINDA POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "02-03-1995", "aadhaar": "", "admissionDate": "09-05-2000", "ageOnAdmission": "5y,2m,7d", "tc": "", "class": "I"}, {"sl": 2, "year": "2000-01", "name": "RAJKUMAR POREL", "gender": "M", "mother": null, "father": "ARUN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "02-03-1995", "aadhaar": "", "admissionDate": "09-05-2000", "ageOnAdmission": "5y,2m,7d", "tc": "", "class": "I"}, {"sl": 3, "year": "2000-01", "name": "MAMATA POREL", "gender": "F", "mother": null, "father": "RATAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "02-03-1995", "aadhaar": "", "admissionDate": "09-05-2000", "ageOnAdmission": "5y,2m,7d", "tc": "", "class": "I"}, {"sl": 4, "year": "2000-01", "name": "SOMA KANRI", "gender": "F", "mother": null, "father": "GOBINDA KANRI", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "06-03-1995", "aadhaar": "", "admissionDate": "09-05-2000", "ageOnAdmission": "5y,2m,3d", "tc": "", "class": "I"}, {"sl": 5, "year": "2000-01", "name": "ISHAN MALIK", "gender": "M", "mother": null, "father": "MANSA MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "02-03-1995", "aadhaar": "", "admissionDate": "09-05-2000", "ageOnAdmission": "5y,2m,7d", "tc": "", "class": "I"}, {"sl": 6, "year": "2000-01", "name": "SAHEB MALIK", "gender": "M", "mother": null, "father": "UTTAM MALIK", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "09-03-1995", "aadhaar": "", "admissionDate": "15-05-2000", "ageOnAdmission": "5y,2m,6d", "tc": "", "class": "I"}, {"sl": 7, "year": "2000-01", "name": "KRISHNA POREL", "gender": "F", "mother": null, "father": "BANSHI POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "10-03-1995", "aadhaar": "", "admissionDate": "15-05-2000", "ageOnAdmission": "5y,2m,5d", "tc": "", "class": "I"}, {"sl": 8, "year": "2000-01", "name": "JHUMA POREL", "gender": "F", "mother": null, "father": "LAXMAN POREL", "address": "Vill-Raghunathpur, PO-Pilkhan, PS-Khanakul, Dist-Hooghly, Pin-712613", "dob": "12-03-1994", "aadhaar": "", "admissionDate": "16-05-2000", "ageOnAdmission": "6y,2m,4d", "tc": "", "class": "I"}];
+window.__SCHOOL__ = {"name": "BHATPARA PRIMARY SCHOOL", "addr": "P.O - PILKHAN * HOOGHLY * PIN - 712613", "estd": "Estd. - 1982 * UDISE - 19120212103", "signLabel": "Signature of the HOI"};
+</script>
+<script>
+/* =========================================================
+   Bhatpara Primary School — Admission Dashboard
+   ========================================================= */
 
-            var opt = {
-                margin:       10,
-                filename:     filename + '.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            html2pdf().set(opt).from(element).save().then(() => {
-                // Hide header again after printing
-                headers.forEach(h => h.classList.add('hidden'));
-            });
-        }
+// ---- CONFIG ----
+// Change the admin password here
+const ADMIN_PASSWORD = "bps@2026";
 
-        // Initialize fetching on load
-        window.onload = fetchAllData;
-    </script>
+let students = [];
+let schoolInfo = {};
+let isAdmin = false;
+let selectedCertStudent = null;
+let sortState = { key: null, dir: 1 }; // null = original register order
+
+const toast = (msg) => {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+};
+
+// ---------------- STORAGE (persists across sessions, shared) ----------------
+async function loadData() {
+  const statusEl = document.getElementById("syncStatus");
+  try {
+    const stored = await window.storage.get("students-data", true);
+    students = stored && stored.value ? JSON.parse(stored.value) : window.__STUDENTS__.slice();
+  } catch (e) {
+    students = window.__STUDENTS__.slice();
+  }
+  try {
+    const storedSchool = await window.storage.get("school-info", true);
+    schoolInfo = storedSchool && storedSchool.value ? JSON.parse(storedSchool.value) : { ...window.__SCHOOL__ };
+  } catch (e) {
+    schoolInfo = { ...window.__SCHOOL__ };
+  }
+  statusEl.textContent = `${students.length} students loaded`;
+}
+
+async function saveStudents() {
+  try {
+    await window.storage.set("students-data", JSON.stringify(students), true);
+  } catch (e) {
+    console.error("storage save failed", e);
+    toast("Save failed — please try again");
+  }
+}
+async function saveSchoolInfo() {
+  try {
+    await window.storage.set("school-info", JSON.stringify(schoolInfo), true);
+  } catch (e) {
+    console.error("storage save failed", e);
+  }
+}
+
+// ---------------- UTIL ----------------
+function formatAddressForCert(addr) {
+  if (!addr) return "";
+  return addr
+    .split(",")
+    .map((part) => part.trim().replace(/-(.+)/, " - $1"))
+    .join(" , ");
+}
+function esc(s) {
+  return (s ?? "").toString().replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function ddmmyyyyToIso(d) {
+  if (!d) return "";
+  const m = d.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if (!m) return "";
+  return `${m[3]}-${m[2]}-${m[1]}`;
+}
+function isoToDdmmyyyy(iso) {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  return `${d}-${m}-${y}`;
+}
+function uniqueSorted(arr) {
+  return [...new Set(arr)].sort();
+}
+
+// ---------------- NAV ----------------
+document.querySelectorAll(".nav-item").forEach((btn) => {
+  btn.addEventListener("click", () => switchView(btn.dataset.view));
+});
+function switchView(view) {
+  document.querySelectorAll(".nav-item").forEach((b) => b.classList.toggle("active", b.dataset.view === view));
+  document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
+  document.getElementById("view-" + view).classList.add("active");
+  if (view === "overview") renderOverview();
+  if (view === "students") renderStudents();
+  if (view === "certificate") renderCertList();
+  if (view === "admin") renderAdminTable();
+}
+
+// ---------------- OVERVIEW ----------------
+let chartYears, chartClasses, chartGender;
+function renderOverview() {
+  document.getElementById("statTotal").textContent = students.length;
+  const male = students.filter((s) => s.gender === "M").length;
+  const female = students.filter((s) => s.gender === "F").length;
+  document.getElementById("statMale").textContent = male;
+  document.getElementById("statFemale").textContent = female;
+  const total = students.length || 1;
+  document.getElementById("statMalePct").textContent = Math.round((male / total) * 100) + "%";
+  document.getElementById("statFemalePct").textContent = Math.round((female / total) * 100) + "%";
+  document.getElementById("statClasses").textContent = uniqueSorted(students.map((s) => s.class).filter(Boolean)).length;
+
+  const byYear = {};
+  students.forEach((s) => (byYear[s.year] = (byYear[s.year] || 0) + 1));
+  const years = Object.keys(byYear).sort();
+
+  const byClass = {};
+  students.forEach((s) => (byClass[s.class] = (byClass[s.class] || 0) + 1));
+  const classOrder = ["PP", "I", "II", "III", "IV", "V"];
+  const classes = Object.keys(byClass).sort((a, b) => {
+    const ia = classOrder.indexOf(a), ib = classOrder.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+
+  const navy = "#1B2A4A", gold = "#C89B3C", maroon = "#7A2039";
+  const palette = ["#1B2A4A", "#C89B3C", "#7A2039", "#5B7CA6", "#B3873F", "#9C4A63", "#3E5C86"];
+
+  if (typeof Chart === "undefined") return; // charting CDN not reachable — rest of dashboard still works
+
+  try {
+    if (chartYears) chartYears.destroy();
+    chartYears = new Chart(document.getElementById("chartYears"), {
+      type: "bar",
+      data: { labels: years, datasets: [{ data: years.map((y) => byYear[y]), backgroundColor: navy, borderRadius: 4, maxBarThickness: 26 }] },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } },
+    });
+
+    if (chartClasses) chartClasses.destroy();
+    chartClasses = new Chart(document.getElementById("chartClasses"), {
+      type: "doughnut",
+      data: { labels: classes, datasets: [{ data: classes.map((c) => byClass[c]), backgroundColor: palette }] },
+      options: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } } } },
+    });
+
+    if (chartGender) chartGender.destroy();
+    chartGender = new Chart(document.getElementById("chartGender"), {
+      type: "doughnut",
+      data: { labels: ["Boys", "Girls"], datasets: [{ data: [male, female], backgroundColor: [navy, maroon] }] },
+      options: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } } } },
+    });
+  } catch (e) {
+    console.error("chart render failed", e);
+  }
+}
+
+// overview quick search
+document.getElementById("overviewSearch").addEventListener("input", (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  const box = document.getElementById("overviewSearchResults");
+  if (!q) {
+    box.classList.remove("show");
+    box.innerHTML = "";
+    return;
+  }
+  const matches = students.filter((s) => s.name.toLowerCase().includes(q)).slice(0, 8);
+  box.innerHTML = matches
+    .map((s) => `<div class="quick-result-item" data-name="${esc(s.name)}"><span>${esc(s.name)}</span><span class="tag">${esc(s.class)} · ${esc(s.year)}</span></div>`)
+    .join("") || `<div class="quick-result-item"><span>No results found</span></div>`;
+  box.classList.add("show");
+  box.querySelectorAll(".quick-result-item[data-name]").forEach((item) => {
+    item.addEventListener("click", () => {
+      switchView("students");
+      document.getElementById("studentSearch").value = item.dataset.name;
+      filterStudents();
+      box.classList.remove("show");
+      e.target.value = "";
+    });
+  });
+});
+
+// ---------------- STUDENTS TABLE ----------------
+function populateFilterOptions() {
+  const years = uniqueSorted(students.map((s) => s.year)).sort().reverse();
+  const classOrder = ["PP", "I", "II", "III", "IV", "V"];
+  const classes = uniqueSorted(students.map((s) => s.class)).sort((a, b) => {
+    const ia = classOrder.indexOf(a), ib = classOrder.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+  [["filterYear", years], ["certFilterYear", years]].forEach(([id, list]) => {
+    const el = document.getElementById(id);
+    const cur = el.value;
+    el.innerHTML = `<option value="">All Years</option>` + list.map((y) => `<option value="${esc(y)}">${esc(y)}</option>`).join("");
+    el.value = cur;
+  });
+  [["filterClass", classes], ["certFilterClass", classes]].forEach(([id, list]) => {
+    const el = document.getElementById(id);
+    const cur = el.value;
+    el.innerHTML = `<option value="">All Classes</option>` + list.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+    el.value = cur;
+  });
+}
+
+function getFilteredStudents() {
+  const q = document.getElementById("studentSearch").value.trim().toLowerCase();
+  const year = document.getElementById("filterYear").value;
+  const cls = document.getElementById("filterClass").value;
+  const gender = document.getElementById("filterGender").value;
+  return students.filter((s) => {
+    if (year && String(s.year) !== year) return false;
+    if (cls && s.class !== cls) return false;
+    if (gender && s.gender !== gender) return false;
+    if (q) {
+      const hay = `${s.name} ${s.father} ${s.mother} ${s.address}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function renderStudents() {
+  populateFilterOptions();
+  let list = getFilteredStudents();
+  if (sortState.key) {
+    list.sort((a, b) => {
+      const va = a[sortState.key], vb = b[sortState.key];
+      if (va === vb) return 0;
+      return va > vb ? sortState.dir : -sortState.dir;
+    });
+  }
+  document.getElementById("studentsCount").textContent = `${list.length} students`;
+  const tbody = document.getElementById("studentsTbody");
+  tbody.innerHTML = list
+    .map(
+      (s) => `<tr class="clickable" data-name="${esc(s.name)}">
+      <td>${esc(s.sl)}</td>
+      <td><b>${esc(s.name)}</b></td>
+      <td>${esc(s.class)}</td>
+      <td>${esc(s.year)}</td>
+      <td><span class="pill ${s.gender}">${s.gender === "M" ? "Boy" : "Girl"}</span></td>
+      <td>${esc(s.father)}</td>
+      <td>${esc(s.mother)}</td>
+      <td>${esc(s.dob)}</td>
+      <td>${esc(s.admissionDate)}</td>
+    </tr>`
+    )
+    .join("");
+  tbody.querySelectorAll("tr").forEach((tr) => {
+    tr.addEventListener("click", () => {
+      switchView("certificate");
+      selectStudentForCert(tr.dataset.name);
+    });
+  });
+}
+function filterStudents() {
+  renderStudents();
+}
+["studentSearch"].forEach((id) => document.getElementById(id).addEventListener("input", renderStudents));
+["filterYear", "filterClass", "filterGender"].forEach((id) => document.getElementById(id).addEventListener("change", renderStudents));
+document.getElementById("resetFilters").addEventListener("click", () => {
+  document.getElementById("studentSearch").value = "";
+  document.getElementById("filterYear").value = "";
+  document.getElementById("filterClass").value = "";
+  document.getElementById("filterGender").value = "";
+  renderStudents();
+});
+document.querySelectorAll("#studentsTable thead th[data-sort]").forEach((th) => {
+  th.addEventListener("click", () => {
+    const key = th.dataset.sort;
+    if (sortState.key === key) sortState.dir *= -1;
+    else { sortState.key = key; sortState.dir = 1; }
+    renderStudents();
+  });
+});
+
+// ---------------- CERTIFICATE ----------------
+function renderCertList() {
+  populateFilterOptions();
+  const q = document.getElementById("certSearch").value.trim().toLowerCase();
+  const year = document.getElementById("certFilterYear").value;
+  const cls = document.getElementById("certFilterClass").value;
+  let list = students.filter((s) => {
+    if (year && String(s.year) !== year) return false;
+    if (cls && s.class !== cls) return false;
+    if (q && !s.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  list.sort((a, b) => a.name.localeCompare(b.name));
+  const box = document.getElementById("certList");
+  box.innerHTML = list
+    .map(
+      (s) => `<div class="cert-list-item ${selectedCertStudent === s.name ? "selected" : ""}" data-name="${esc(s.name)}">
+      <span>${esc(s.name)}</span><span class="meta">${esc(s.class)} · ${esc(s.year)}</span>
+    </div>`
+    )
+    .join("") || `<div class="cert-list-item"><span class="muted">No results found</span></div>`;
+  box.querySelectorAll(".cert-list-item[data-name]").forEach((item) => {
+    item.addEventListener("click", () => selectStudentForCert(item.dataset.name));
+  });
+}
+["certSearch", "certFilterYear", "certFilterClass"].forEach((id) =>
+  document.getElementById(id).addEventListener("input", renderCertList)
+);
+
+function selectStudentForCert(name) {
+  const s = students.find((x) => x.name === name);
+  if (!s) return;
+  selectedCertStudent = name;
+  document.getElementById("certEmptyState").style.display = "none";
+  document.getElementById("certificateSheet").style.display = "block";
+  renderCertList();
+  renderCertificatePreview(s);
+}
+
+function renderSchoolHeader() {
+  document.getElementById("pvSchoolName").textContent = schoolInfo.name;
+  document.getElementById("pvSchoolAddr").textContent = schoolInfo.addr;
+  document.getElementById("pvSchoolEstd").textContent = schoolInfo.estd;
+  document.getElementById("pvSignLabel").textContent = schoolInfo.signLabel;
+  document.getElementById("brandSchoolName").textContent = schoolInfo.name;
+}
+
+function renderCertificatePreview(s) {
+  const addr = formatAddressForCert(s.address);
+  const body = `This is to certify that <b>${esc(s.name)}</b>, C/O - <b>${esc(s.father)}</b>, ${esc(addr)}, was admitted in this school on - <b>${esc(
+    s.admissionDate
+  )}</b>. According to the school admission register his/her DOB is : <b>${esc(s.dob)}</b>. I wish his/her success in every step of life.`;
+  document.getElementById("pvBody").innerHTML = body;
+  updateRefDatePreview();
+}
+function updateRefDatePreview() {
+  const ref = document.getElementById("certRefNo").value || "...................";
+  const dateVal = document.getElementById("certDate").value;
+  document.getElementById("pvRefNo").textContent = ref;
+  document.getElementById("pvDate").textContent = dateVal ? isoToDdmmyyyy(dateVal) : "..................";
+}
+document.getElementById("certRefNo").addEventListener("input", updateRefDatePreview);
+document.getElementById("certDate").addEventListener("input", updateRefDatePreview);
+
+document.getElementById("btnPrint").addEventListener("click", () => {
+  if (!selectedCertStudent) return toast("Please select a student first");
+  window.print();
+});
+
+document.getElementById("btnDownloadPdf").addEventListener("click", async () => {
+  if (!selectedCertStudent) return toast("Please select a student first");
+  if (typeof html2canvas === "undefined" || typeof window.jspdf === "undefined") {
+    return toast("PDF tools failed to load — check your internet connection and refresh the page");
+  }
+  const btn = document.getElementById("btnDownloadPdf");
+  const original = btn.textContent;
+  btn.textContent = "Generating...";
+  btn.disabled = true;
+  try {
+    const sheet = document.getElementById("certificateSheet");
+    const canvas = await html2canvas(sheet, { scale: 2.5, useCORS: true, backgroundColor: "#FBF8F1" });
+    const imgData = canvas.toDataURL("image/jpeg", 0.98);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
+    pdf.save(`Certificate_${selectedCertStudent.replace(/\s+/g, "_")}.pdf`);
+    toast("PDF downloaded");
+  } catch (e) {
+    console.error(e);
+    toast("Something went wrong creating the PDF");
+  }
+  btn.textContent = original;
+  btn.disabled = false;
+});
+
+// ---------------- ADMIN ----------------
+document.getElementById("btnAdminLogin").addEventListener("click", tryAdminLogin);
+document.getElementById("adminPassword").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") tryAdminLogin();
+});
+function tryAdminLogin() {
+  const val = document.getElementById("adminPassword").value;
+  if (val === ADMIN_PASSWORD) {
+    isAdmin = true;
+    document.getElementById("adminLoginBox").classList.add("hidden");
+    document.getElementById("adminPanel").classList.remove("hidden");
+    document.getElementById("adminLoginError").textContent = "";
+    document.getElementById("editSchoolName").value = schoolInfo.name;
+    document.getElementById("editSchoolAddr").value = schoolInfo.addr;
+    document.getElementById("editSchoolEstd").value = schoolInfo.estd;
+    document.getElementById("editSignLabel").value = schoolInfo.signLabel;
+    renderAdminTable();
+  } else {
+    document.getElementById("adminLoginError").textContent = "Incorrect password — please try again";
+  }
+}
+document.getElementById("btnLogout").addEventListener("click", () => {
+  isAdmin = false;
+  document.getElementById("adminPassword").value = "";
+  document.getElementById("adminLoginBox").classList.remove("hidden");
+  document.getElementById("adminPanel").classList.add("hidden");
+});
+
+document.getElementById("btnSaveSchoolInfo").addEventListener("click", async () => {
+  schoolInfo.name = document.getElementById("editSchoolName").value;
+  schoolInfo.addr = document.getElementById("editSchoolAddr").value;
+  schoolInfo.estd = document.getElementById("editSchoolEstd").value;
+  schoolInfo.signLabel = document.getElementById("editSignLabel").value;
+  await saveSchoolInfo();
+  renderSchoolHeader();
+  toast("School info saved");
+});
+
+function renderAdminTable() {
+  const q = document.getElementById("adminSearch").value.trim().toLowerCase();
+  const list = students.filter((s) => !q || s.name.toLowerCase().includes(q));
+  const tbody = document.getElementById("adminTbody");
+  tbody.innerHTML = list
+    .map((s, idx) => {
+      const realIdx = students.indexOf(s);
+      return `<tr data-idx="${realIdx}">
+      <td>${esc(s.sl)}</td>
+      <td><input data-field="name" value="${esc(s.name)}"/></td>
+      <td><input data-field="class" value="${esc(s.class)}" style="width:50px"/></td>
+      <td><input data-field="year" value="${esc(s.year)}" style="width:60px"/></td>
+      <td><input data-field="gender" value="${esc(s.gender)}" style="width:38px"/></td>
+      <td><input data-field="father" value="${esc(s.father)}"/></td>
+      <td><input data-field="mother" value="${esc(s.mother)}"/></td>
+      <td><input data-field="address" value="${esc(s.address)}" style="min-width:220px"/></td>
+      <td><input data-field="dob" value="${esc(s.dob)}" style="width:90px" placeholder="DD-MM-YYYY"/></td>
+      <td><input data-field="admissionDate" value="${esc(s.admissionDate)}" style="width:90px" placeholder="DD-MM-YYYY"/></td>
+      <td><button class="btn danger small" data-del="${realIdx}">✕</button></td>
+    </tr>`;
+    })
+    .join("");
+  tbody.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("change", async (e) => {
+      const tr = e.target.closest("tr");
+      const idx = Number(tr.dataset.idx);
+      students[idx][e.target.dataset.field] = e.target.value;
+      await saveStudents();
+      toast("Saved");
+    });
+  });
+  tbody.querySelectorAll("[data-del]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (!confirm("Delete this student's record?")) return;
+      const idx = Number(btn.dataset.del);
+      students.splice(idx, 1);
+      await saveStudents();
+      renderAdminTable();
+      toast("Deleted");
+    });
+  });
+}
+document.getElementById("adminSearch").addEventListener("input", renderAdminTable);
+
+document.getElementById("btnAddRow").addEventListener("click", async () => {
+  const nextSl = students.length ? Math.max(...students.map((s) => Number(s.sl) || 0)) + 1 : 1;
+  students.push({
+    sl: nextSl, name: "NEW STUDENT", class: "PP", year: String(new Date().getFullYear()),
+    gender: "M", father: "", mother: "", address: "", dob: "", aadhaar: "", admissionDate: "", ageOnAdmission: "", tc: "",
+  });
+  await saveStudents();
+  renderAdminTable();
+  toast("New student added — please fill in the details");
+});
+
+document.getElementById("btnExportJson").addEventListener("click", () => {
+  downloadBlob(JSON.stringify(students, null, 2), "students.json", "application/json");
+});
+document.getElementById("btnExportCsv").addEventListener("click", () => {
+  const headers = ["sl", "name", "class", "year", "gender", "father", "mother", "address", "dob", "aadhaar", "admissionDate", "ageOnAdmission", "tc"];
+  const rows = [headers.join(",")].concat(
+    students.map((s) => headers.map((h) => `"${String(s[h] ?? "").replace(/"/g, '""')}"`).join(","))
+  );
+  downloadBlob(rows.join("\n"), "students.csv", "text/csv");
+});
+function downloadBlob(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ---------------- GOOGLE SHEET SYNC ----------------
+document.getElementById("btnSyncSheet").addEventListener("click", async () => {
+  const dataUrl = document.getElementById("sheetUrlData").value.trim();
+  const schoolUrl = document.getElementById("sheetUrlSchool").value.trim();
+  const hint = document.getElementById("syncHint");
+  if (!dataUrl) { hint.textContent = "The CSV link for the Data sheet is required"; return; }
+  hint.textContent = "Syncing...";
+  try {
+    const csvText = await (await fetch(dataUrl)).text();
+    const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+    const rows = parsed.data.map((r, i) => normalizeRow(r, i));
+    if (!rows.length) throw new Error("empty");
+    students = rows;
+    await saveStudents();
+
+    if (schoolUrl) {
+      const csvText2 = await (await fetch(schoolUrl)).text();
+      const parsed2 = Papa.parse(csvText2, { header: true, skipEmptyLines: true });
+      if (parsed2.data[0]) {
+        const r = parsed2.data[0];
+        schoolInfo = {
+          name: r.name || r.Name || schoolInfo.name,
+          addr: r.addr || r.Address || schoolInfo.addr,
+          estd: r.estd || r.Estd || schoolInfo.estd,
+          signLabel: r.signLabel || r.SignLabel || schoolInfo.signLabel,
+        };
+        await saveSchoolInfo();
+        renderSchoolHeader();
+      }
+    }
+    hint.textContent = `Success! ${students.length} student records synced.`;
+    document.getElementById("syncStatus").textContent = `${students.length} students — last synced just now`;
+    renderAdminTable();
+    toast("Synced from Google Sheet");
+  } catch (e) {
+    console.error(e);
+    hint.textContent = "Sync failed — check that the link is correctly published as 'Publish to web → CSV'.";
+  }
+});
+function normalizeRow(r, i) {
+  const get = (...keys) => {
+    for (const k of keys) if (r[k] !== undefined) return r[k];
+    return "";
+  };
+  return {
+    sl: get("sl", "Sl no", "Sl") || i + 1,
+    year: get("year", "Year"),
+    name: get("name", "Name of the student", "Name"),
+    gender: get("gender", "M/F"),
+    mother: get("mother", "Mother"),
+    father: get("father", "Father"),
+    address: get("address", "Address"),
+    dob: get("dob", "D.O.B"),
+    aadhaar: get("aadhaar", "AADHAAR No."),
+    admissionDate: get("admissionDate", "Admission Date"),
+    ageOnAdmission: get("ageOnAdmission", "Age on Admision"),
+    tc: get("tc", "T.C No. And Date"),
+    class: get("class", "Admision in Class", "Class"),
+  };
+}
+
+// ---------------- INIT ----------------
+(async function init() {
+  await loadData();
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById("certDate").value = today;
+  renderSchoolHeader();
+  renderOverview();
+  populateFilterOptions();
+  document.getElementById("certificateSheet").style.display = "none";
+})();
+
+</script>
 </body>
 </html>
