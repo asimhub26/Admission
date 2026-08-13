@@ -10,6 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --navy:#101A33;
@@ -117,8 +118,9 @@ h1{font-family:var(--font-display);font-size:34px;margin:0 0 6px;color:var(--nav
 .panel canvas{max-width:100%;}
 .panel.narrow{max-width:420px;}
 .panel-head h3,.panel h3{font-family:var(--font-display);font-size:17px;margin:0 0 14px;color:var(--navy);font-weight:600;}
-.panel-head-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.panel-head-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:10px;}
 .panel-head-row h3{margin:0;}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap;}
 
 /* filter bar / table */
 .filter-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
@@ -184,12 +186,12 @@ table.data-table{width:100%;border-collapse:collapse;font-family:var(--font-en);
 .cert-watermark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.05;pointer-events:none;}
 .cert-watermark svg{width:60%;}
 .cert-header{text-align:center;position:relative;}
-.cert-school-name{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:26px;letter-spacing:.03em;color:var(--maroon);}
-.cert-school-line{font-size:12.5px;color:var(--ink);margin-top:3px;letter-spacing:.02em;}
-.cert-school-line.mono{font-family:var(--font-mono);font-size:11px;color:var(--muted);}
+.cert-school-name{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:32px;letter-spacing:.03em;color:var(--maroon);}
+.cert-school-line{font-size:15px;color:var(--ink);margin-top:4px;letter-spacing:.02em;}
+.cert-school-line.mono{font-family:var(--font-mono);font-size:13px;color:var(--muted);}
 .cert-rule{height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:14px 0 10px;}
 .cert-refdate{display:flex;justify-content:space-between;font-size:12.5px;position:relative;margin-bottom:26px;}
-.cert-title{text-align:center;font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:.08em;margin-top:16mm;margin-bottom:28px;position:relative;}
+.cert-title{text-align:center;font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:.08em;margin-top:26mm;margin-bottom:28px;position:relative;}
 .cert-body{font-size:14px;line-height:2.1;text-align:justify;text-indent:2.2em;position:relative;color:var(--ink);}
 .cert-body + .cert-body{margin-top:1.4em;}
 .cert-sign{position:absolute;bottom:42mm;right:20mm;text-align:center;}
@@ -521,12 +523,16 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
         <div class="panel">
           <div class="panel-head-row">
             <h3>Edit Student Register</h3>
-            <div>
+            <div class="header-actions">
               <button class="btn ghost small" id="btnAddRow">+ New Student</button>
+              <button class="btn ghost small" id="btnDownloadExcel">⬇ Download Excel (Bulk Entry)</button>
+              <button class="btn primary small" id="btnUploadExcelTrigger">📤 Upload Excel (Bulk Update)</button>
+              <input type="file" id="excelUploadInput" accept=".xlsx,.xls" style="display:none" />
               <button class="btn ghost small" id="btnExportJson">⬇ Export JSON</button>
               <button class="btn ghost small" id="btnExportCsv">⬇ Export CSV</button>
             </div>
           </div>
+          <p class="fine-print" style="margin-top:0;border-top:none;padding-top:0;">Download the Excel file, add or edit rows, then upload it back — rows whose <b>sl</b> matches an existing student update that record; rows with a new/blank <b>sl</b> are added as new students at the top of the list.</p>
           <input type="text" id="adminSearch" class="search-input" placeholder="Search to edit..." />
           <div class="table-wrap admin-table-wrap">
             <table class="data-table editable" id="adminTable">
@@ -1006,13 +1012,72 @@ document.getElementById("adminSearch").addEventListener("input", renderAdminTabl
 
 document.getElementById("btnAddRow").addEventListener("click", async () => {
   const nextSl = students.length ? Math.max(...students.map((s) => Number(s.sl) || 0)) + 1 : 1;
-  students.push({
+  students.unshift({
     sl: nextSl, name: "NEW STUDENT", class: "PP", year: String(new Date().getFullYear()),
     gender: "M", father: "", mother: "", address: "", dob: "", aadhaar: "", admissionDate: "", ageOnAdmission: "", tc: "",
   });
   await saveStudents();
+  document.getElementById("adminSearch").value = "";
   renderAdminTable();
-  toast("New student added — please fill in the details");
+  toast("New student added at the top — please fill in the details");
+});
+
+document.getElementById("btnDownloadExcel").addEventListener("click", () => {
+  if (typeof XLSX === "undefined") return toast("Excel tool failed to load — check your internet connection");
+  const headers = ["sl", "name", "class", "year", "gender", "father", "mother", "address", "dob", "aadhaar", "admissionDate", "ageOnAdmission", "tc"];
+  const data = students.map((s) => {
+    const row = {};
+    headers.forEach((h) => (row[h] = s[h] ?? ""));
+    return row;
+  });
+  const ws = XLSX.utils.json_to_sheet(data, { header: headers });
+  ws["!cols"] = headers.map((h) => ({ wch: h === "address" ? 34 : h === "name" || h === "father" || h === "mother" ? 20 : 12 }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Students");
+  XLSX.writeFile(wb, "students_bulk_entry.xlsx");
+  toast("Excel file downloaded");
+});
+
+document.getElementById("btnUploadExcelTrigger").addEventListener("click", () => {
+  document.getElementById("excelUploadInput").click();
+});
+document.getElementById("excelUploadInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+  if (typeof XLSX === "undefined") return toast("Excel tool failed to load — check your internet connection");
+  try {
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf, { type: "array" });
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+    if (!rows.length) return toast("No rows found in that file");
+
+    let nextSl = students.length ? Math.max(...students.map((s) => Number(s.sl) || 0)) + 1 : 1;
+    let added = 0, updated = 0;
+    const newEntries = [];
+    rows.forEach((r) => {
+      const norm = normalizeRow(r, 0);
+      const slNum = Number(norm.sl);
+      const existingIdx = slNum ? students.findIndex((s) => Number(s.sl) === slNum) : -1;
+      if (existingIdx !== -1) {
+        students[existingIdx] = { ...students[existingIdx], ...norm };
+        updated++;
+      } else {
+        if (!norm.sl) norm.sl = nextSl++;
+        newEntries.push(norm);
+        added++;
+      }
+    });
+    students = [...newEntries, ...students];
+    await saveStudents();
+    document.getElementById("adminSearch").value = "";
+    renderAdminTable();
+    toast(`Excel synced — ${added} added, ${updated} updated`);
+  } catch (err) {
+    console.error(err);
+    toast("Could not read that Excel file");
+  }
 });
 
 document.getElementById("btnExportJson").addEventListener("click", () => {
