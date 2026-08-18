@@ -222,6 +222,7 @@ table.editable td{padding:4px 8px;}
   box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s;z-index:100;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  
 
 /* ---------------- RESPONSIVE ---------------- */
 @media (max-width:1100px){
@@ -293,6 +294,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
         <span class="nav-ico">◆</span> Admin Login
       </button>
     </nav>
+
     <div class="sidebar-foot">
       <div id="syncStatus" class="sync-status">Local data loaded</div>
     </div>
@@ -769,6 +771,7 @@ document.getElementById("overviewSearch").addEventListener("input", (e) => {
   });
 });
 
+
 // ---------------- STUDENTS TABLE ----------------
 function populateFilterOptions() {
   const years = uniqueSorted(students.map((s) => s.year)).sort().reverse();
@@ -1044,7 +1047,7 @@ function renderAdminTable() {
     });
   });
 }
-document.getElementById("adminSearch").addEventListener("input", renderAdminTable);
+  document.getElementById("adminSearch").addEventListener("input", renderAdminTable);
 
 document.getElementById("btnAddRow").addEventListener("click", async () => {
   const nextSl = students.length ? Math.max(...students.map((s) => Number(s.sl) || 0)) + 1 : 1;
