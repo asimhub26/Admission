@@ -18,7 +18,7 @@
   --navy-3:#233761;
   --gold:#C89B3C;
   --gold-light:#E8C878;
-  --maroon:#8CB274;
+  --maroon:#7A2039;
   --paper:#FBF8F1;
   --bg:#EDF1F7;
   --surface:#FFFFFF;
@@ -504,7 +504,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
           <input type="text" id="sheetUrlSchool" class="text-input" placeholder="Optional — CSV link for school info" />
           <button class="btn primary" id="btnSyncSheet">⟳ Sync Now</button>
           <div class="hint" id="syncHint"></div>
-          <p class="fine-print">Note: this dashboard is fully static (no server), so synced data is saved for everyone who opens this dashboard link. The admin password only stops casual users from editing — if sensitive data (like Aadhaar numbers) is included, only share this link with people you trust.</p>
+          <p class="fine-print">Note: this dashboard is fully static (no server). Any changes you make — editing, adding, or syncing from Google Sheet — are saved only in <b>this browser on this device</b>, not shared with other visitors automatically. To keep every device in sync, sync from the same published Google Sheet on each device after making changes there. The admin password only stops casual users from editing — if sensitive data (like Aadhaar numbers) is included, only share this link with people you trust.</p>
         </div>
 
         <div class="panel">
@@ -581,18 +581,56 @@ const toast = (msg) => {
   window.__toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
 };
 
-// ---------------- STORAGE (persists across sessions, shared) ----------------
+// ---------------- STORAGE ----------------
+// Tries Claude's built-in artifact storage first (only available inside claude.ai
+// previews); on a normal hosted site (e.g. GitHub Pages) that API does not exist,
+// so this falls back to the browser's localStorage, which actually persists there.
+// NOTE: localStorage only saves data on THIS device/browser — it is not shared
+// with other visitors. To share updates across devices/admins, use the Google
+// Sheet Sync in the Admin panel after making changes.
+const LS_PREFIX = "bps_dashboard_";
+const hasClaudeStorage = () => typeof window.storage !== "undefined" && window.storage && typeof window.storage.get === "function";
+
+async function storageGet(key) {
+  if (hasClaudeStorage()) {
+    try {
+      const r = await window.storage.get(key, true);
+      if (r) return r.value;
+    } catch (e) { /* fall through to localStorage */ }
+  }
+  try {
+    return localStorage.getItem(LS_PREFIX + key);
+  } catch (e) {
+    return null;
+  }
+}
+async function storageSet(key, value) {
+  if (hasClaudeStorage()) {
+    try {
+      await window.storage.set(key, value, true);
+      return true;
+    } catch (e) { /* fall through to localStorage */ }
+  }
+  try {
+    localStorage.setItem(LS_PREFIX + key, value);
+    return true;
+  } catch (e) {
+    console.error("storage save failed", e);
+    return false;
+  }
+}
+
 async function loadData() {
   const statusEl = document.getElementById("syncStatus");
   try {
-    const stored = await window.storage.get("students-data", true);
-    students = stored && stored.value ? JSON.parse(stored.value) : window.__STUDENTS__.slice();
+    const raw = await storageGet("students-data");
+    students = raw ? JSON.parse(raw) : window.__STUDENTS__.slice();
   } catch (e) {
     students = window.__STUDENTS__.slice();
   }
   try {
-    const storedSchool = await window.storage.get("school-info", true);
-    schoolInfo = storedSchool && storedSchool.value ? JSON.parse(storedSchool.value) : { ...window.__SCHOOL__ };
+    const rawSchool = await storageGet("school-info");
+    schoolInfo = rawSchool ? JSON.parse(rawSchool) : { ...window.__SCHOOL__ };
   } catch (e) {
     schoolInfo = { ...window.__SCHOOL__ };
   }
@@ -600,19 +638,11 @@ async function loadData() {
 }
 
 async function saveStudents() {
-  try {
-    await window.storage.set("students-data", JSON.stringify(students), true);
-  } catch (e) {
-    console.error("storage save failed", e);
-    toast("Save failed — please try again");
-  }
+  const ok = await storageSet("students-data", JSON.stringify(students));
+  if (!ok) toast("Save failed — please try again");
 }
 async function saveSchoolInfo() {
-  try {
-    await window.storage.set("school-info", JSON.stringify(schoolInfo), true);
-  } catch (e) {
-    console.error("storage save failed", e);
-  }
+  await storageSet("school-info", JSON.stringify(schoolInfo));
 }
 
 // ---------------- UTIL ----------------
