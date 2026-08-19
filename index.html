@@ -413,386 +413,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
         <div class="cert-list-pane">
           <input type="text" id="certSearch" class="search-input" placeholder="Search by name / class / year..." />
           <div class="cert-filter-row">
-            <select id="certFilterYear"><body{
-  font-family:var(--font-body);
-  background:var(--bg);
-  color:var(--ink);
-  -webkit-font-smoothing:antialiased;
-}
-button,input,select{font-family:inherit;}
-::selection{background:var(--gold-light);color:var(--navy);}
-
-.app{display:flex;min-height:100vh;max-width:100vw;overflow-x:hidden;}
-
-/* ---------------- SIDEBAR ---------------- */
-.sidebar{
-  width:268px;
-  flex-shrink:0;
-  background:linear-gradient(175deg,var(--navy) 0%, var(--navy-2) 100%);
-  color:#EEF1F8;
-  display:flex;
-  flex-direction:column;
-  padding:28px 20px;
-  position:sticky;
-  top:0;
-  height:100vh;
-}
-.brand{display:flex;align-items:center;gap:12px;padding-bottom:26px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:22px;}
-.seal{width:44px;height:44px;flex-shrink:0;}
-.brand-title{font-family:var(--font-display);font-size:15.5px;line-height:1.25;font-weight:600;letter-spacing:.02em;}
-.brand-sub{font-size:12px;color:var(--gold-light);margin-top:3px;letter-spacing:.02em;}
-
-.nav{display:flex;flex-direction:column;gap:4px;}
-.nav-item{
-  display:flex;align-items:center;gap:10px;
-  background:transparent;border:none;color:#C9D2E6;
-  text-align:left;padding:12px 14px;border-radius:10px;
-  font-size:14.5px;cursor:pointer;transition:.15s;font-weight:500;
-}
-.nav-ico{color:var(--gold);font-size:9px;}
-.nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
-.nav-item.active{background:var(--gold);color:var(--navy);font-weight:700;}
-.nav-item.active .nav-ico{color:var(--navy);}
-
-.sidebar-foot{margin-top:auto;padding-top:20px;border-top:1px solid rgba(255,255,255,.12);}
-.sync-status{font-size:11.5px;color:#93A0C0;font-family:var(--font-mono);}
-
-/* ---------------- MAIN ---------------- */
-.main{flex:1;min-width:0;padding:36px 44px;max-width:100%;overflow-x:hidden;}
-.view{display:none;}
-.view.active{display:block;animation:fadein .35s ease;}
-@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-
-.view-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:28px;flex-wrap:wrap;}
-.eyebrow{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--maroon);font-weight:600;margin-bottom:6px;}
-h1{font-family:var(--font-display);font-size:34px;margin:0 0 6px;color:var(--navy);font-weight:600;}
-.lede{color:var(--muted);margin:0;font-size:14.5px;}
-
-.search-wrap{position:relative;min-width:280px;}
-.search-wrap input{
-  width:100%;padding:12px 16px;border-radius:10px;border:1.5px solid var(--line);
-  font-size:14px;background:var(--surface);
-}
-.search-wrap input:focus{outline:none;border-color:var(--gold);}
-.quick-results{
-  position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);
-  border-radius:10px;box-shadow:var(--shadow);border:1px solid var(--line);
-  max-height:280px;overflow:auto;z-index:20;display:none;
-}
-.quick-results.show{display:block;}
-.quick-result-item{padding:10px 14px;font-size:13.5px;cursor:pointer;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;}
-.quick-result-item:last-child{border-bottom:none;}
-.quick-result-item:hover{background:var(--bg);}
-.quick-result-item span.tag{color:var(--muted);font-family:var(--font-mono);font-size:11.5px;}
-
-/* stat cards */
-.stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:26px;}
-.stat-card{background:var(--surface);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);border:1px solid var(--line);min-width:0;}
-.stat-label{font-size:12.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
-.stat-value{font-family:var(--font-display);font-size:36px;color:var(--navy);margin:6px 0 2px;font-weight:600;}
-.stat-foot{font-size:12px;color:var(--gold);font-family:var(--font-mono);}
-
-.chart-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);gap:16px;}
-.panel{background:var(--surface);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);border:1px solid var(--line);min-width:0;}
-.panel canvas{max-width:100%;}
-.panel.narrow{max-width:420px;}
-.panel-head h3,.panel h3{font-family:var(--font-display);font-size:17px;margin:0 0 14px;color:var(--navy);font-weight:600;}
-.panel-head-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:10px;}
-.panel-head-row h3{margin:0;}
-.header-actions{display:flex;gap:8px;flex-wrap:wrap;}
-
-/* filter bar / table */
-.filter-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
-.search-input,.text-input{
-  padding:11px 14px;border-radius:9px;border:1.5px solid var(--line);font-size:14px;background:var(--surface);
-}
-.search-input{flex:1;min-width:220px;}
-.text-input{width:100%;margin-bottom:12px;}
-select{padding:11px 12px;border-radius:9px;border:1.5px solid var(--line);background:var(--surface);font-size:13.5px;color:var(--ink);}
-.filter-bar input:focus,.filter-bar select:focus,.text-input:focus{outline:none;border-color:var(--gold);}
-
-.btn{border:none;border-radius:9px;padding:11px 18px;font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s;}
-.btn.primary{background:var(--maroon);color:#fff;}
-.btn.primary:hover{background:#611730;}
-.btn.ghost{background:var(--surface);color:var(--navy);border:1.5px solid var(--line);}
-.btn.ghost:hover{border-color:var(--gold);}
-.btn.small{padding:8px 12px;font-size:12.5px;}
-.btn.danger{background:#fff;color:#B3273F;border:1.5px solid #F2C6D0;}
-
-.table-wrap{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line);overflow:auto;max-height:64vh;max-width:100%;}
-table.data-table{width:100%;border-collapse:collapse;font-family:var(--font-en);font-size:13.5px;}
-.data-table thead th{
-  position:sticky;top:0;background:var(--navy-2);color:#EAEFFA;text-align:left;
-  padding:12px 14px;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;white-space:nowrap;
-}
-.data-table thead th:hover{background:var(--navy-3);}
-.data-table tbody td{padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink);white-space:nowrap;}
-.data-table tbody tr:hover{background:#F7F9FC;}
-.data-table tbody tr.clickable{cursor:pointer;}
-.pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:600;}
-.pill.M{background:#E7EEFC;color:#2B4C9B;}
-.pill.F{background:#FBE8EE;color:#B3273F;}
-
-.muted{color:var(--muted);}
-.hidden{display:none !important;}
-
-/* certificate layout */
-.cert-layout{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:20px;align-items:start;max-width:100%;}
-.cert-list-pane{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line);padding:16px;position:sticky;top:20px;min-width:0;}
-.cert-filter-row{display:flex;gap:8px;margin:10px 0;}
-.cert-filter-row select{flex:1;min-width:0;}
-.cert-list{max-height:58vh;overflow:auto;margin-top:8px;}
-.cert-list-item{padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}
-.cert-list-item:hover{background:var(--bg);}
-.cert-list-item.selected{background:var(--maroon);color:#fff;}
-.cert-list-item .meta{font-size:11px;color:var(--muted);font-family:var(--font-mono);}
-.cert-list-item.selected .meta{color:#EFC9D3;}
-
-.cert-preview-pane{position:relative;min-width:0;}
-.cert-toolbar{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:14px;flex-wrap:wrap;background:var(--surface);padding:14px 18px;border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow);}
-.cert-toolbar-fields{display:flex;gap:16px;flex-wrap:wrap;}
-.cert-toolbar-fields label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:5px;font-weight:600;}
-.cert-toolbar-fields input{padding:8px 10px;border-radius:7px;border:1.5px solid var(--line);font-family:var(--font-mono);font-size:13px;}
-.cert-toolbar-actions{display:flex;gap:10px;}
-
-.a4-scroll{overflow:auto;max-height:76vh;display:flex;justify-content:center;background:#DCE2EE;border-radius:var(--radius);padding:26px;}
-.a4-sheet{
-  width:210mm;min-height:297mm;background:var(--paper);
-  box-shadow:0 10px 40px rgba(16,26,51,.35);
-  padding:22mm 20mm;position:relative;flex-shrink:0;
-  border:1px solid #E4D9BE;
-}
-.cert-watermark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.05;pointer-events:none;}
-.cert-watermark svg{width:60%;}
-.cert-header{text-align:center;position:relative;}
-.cert-school-name{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:32px;letter-spacing:.03em;color:var(--maroon);}
-.cert-school-line{font-size:15px;color:var(--ink);margin-top:4px;letter-spacing:.02em;}
-.cert-school-line.mono{font-family:var(--font-mono);font-size:13px;color:var(--muted);}
-.cert-rule{height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:14px 0 10px;}
-.cert-refdate{display:flex;justify-content:space-between;font-size:12.5px;position:relative;margin-bottom:26px;}
-.cert-title{text-align:center;font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:.08em;margin-top:26mm;margin-bottom:28px;position:relative;}
-.cert-body{font-size:14px;line-height:2.1;text-align:justify;text-indent:2.2em;position:relative;color:var(--ink);}
-.cert-body + .cert-body{margin-top:1.4em;}
-.cert-sign{position:absolute;bottom:42mm;right:20mm;text-align:center;}
-.sign-line{width:180px;border-bottom:1.5px solid var(--ink);margin-bottom:6px;}
-.sign-label{font-size:12px;color:var(--muted);}
-.mono{font-family:var(--font-mono);}
-.cert-empty{display:none;}
-
-.steps{font-size:13px;color:var(--ink);padding-left:18px;line-height:1.9;}
-.field-label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;margin-top:4px;}
-.hint{font-size:12.5px;color:var(--maroon);min-height:16px;margin-top:6px;}
-.fine-print{font-size:11.5px;color:var(--muted);margin-top:14px;line-height:1.7;border-top:1px dashed var(--line);padding-top:12px;}
-
-.admin-login-box{display:flex;justify-content:center;padding-top:40px;}
-.admin-login-box .panel{width:100%;}
-.admin-login-box input{width:100%;padding:12px 14px;border-radius:9px;border:1.5px solid var(--line);margin:14px 0;font-size:14px;}
-.error-msg{color:#B3273F;font-size:12.5px;min-height:16px;}
-
-.admin-panel{display:grid;gap:18px;}
-.admin-table-wrap{max-height:50vh;}
-table.editable input{width:100%;border:1px solid transparent;background:transparent;padding:6px 4px;border-radius:6px;font-size:13px;font-family:var(--font-en);}
-table.editable input:focus{border-color:var(--gold);background:#FFFDF5;outline:none;}
-table.editable td{padding:4px 8px;}
-
-.toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:var(--navy);color:#fff;padding:12px 22px;border-radius:10px;font-size:13.5px;
-  box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s;z-index:100;
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  
-
-/* ---------------- RESPONSIVE ---------------- */
-@media (max-width:1100px){
-  .chart-grid{grid-template-columns:1fr;}
-  .stat-grid{grid-template-columns:repeat(2,1fr);}
-  .cert-layout{grid-template-columns:1fr;}
-  .cert-list-pane{position:static;}
-}
-@media (max-width:760px){
-  .app{flex-direction:column;}
-  .sidebar{width:100%;height:auto;position:relative;flex-direction:row;align-items:center;flex-wrap:wrap;padding:16px;}
-  .brand{border-bottom:none;margin-bottom:0;padding-bottom:0;}
-  .nav{flex-direction:row;flex-wrap:wrap;margin-left:auto;}
-  .sidebar-foot{display:none;}
-  .main{padding:20px 16px;}
-  h1{font-size:26px;}
-  .a4-sheet{width:100%;padding:14mm 10mm;min-height:auto;}
-}
-
-/* focus visibility */
-button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
-@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
-
-/* ---------------- PRINT ---------------- */
-@media print{
-  body *{visibility:hidden;}
-  .a4-sheet, .a4-sheet *{visibility:visible;}
-  .a4-sheet{position:absolute;top:0;left:0;width:210mm;min-height:297mm;box-shadow:none;border:none;margin:0;padding:22mm 20mm;}
-  .a4-scroll{overflow:visible;max-height:none;padding:0;background:none;}
-  @page{size:A4;margin:0;}
-}
-
-</style>
-</head>
-<body>
-
-<div class="app">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="brand">
-      <svg class="seal" viewBox="0 0 100 100" aria-hidden="true">
-        <circle cx="50" cy="50" r="46" fill="none" stroke="#C89B3C" stroke-width="2"/>
-        <circle cx="50" cy="50" r="38" fill="none" stroke="#C89B3C" stroke-width="1"/>
-        <circle cx="50" cy="50" r="30" fill="#7A2039"/>
-        <text x="50" y="56" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="22" fill="#E8C878" font-weight="700">BPS</text>
-        <g stroke="#C89B3C" stroke-width="1.4">
-          <path d="M50 4 L50 12" /><path d="M50 88 L50 96" />
-          <path d="M4 50 L12 50" /><path d="M88 50 L96 50" />
-        </g>
-      </svg>
-      <div class="brand-text">
-        <div class="brand-title" id="brandSchoolName">BHATPARA PRIMARY SCHOOL</div>
-        <div class="brand-sub">Admission Dashboard</div>
-      </div>
-    </div>
-
-    <nav class="nav">
-      <button class="nav-item active" data-view="overview">
-        <span class="nav-ico">◆</span> Overview
-      </button>
-      <button class="nav-item" data-view="students">
-        <span class="nav-ico">◆</span> Students Register
-      </button>
-      <button class="nav-item" data-view="certificate">
-        <span class="nav-ico">◆</span> Certificate
-      </button>
-      <button class="nav-item" data-view="admin">
-        <span class="nav-ico">◆</span> Admin Login
-      </button>
-    </nav>
-
-    <div class="sidebar-foot">
-      <div id="syncStatus" class="sync-status">Local data loaded</div>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <main class="main">
-
-    <!-- ===================== OVERVIEW ===================== -->
-    <section class="view active" id="view-overview">
-      <header class="view-head">
-        <div>
-          <div class="eyebrow">Summary</div>
-          <h1>Overview</h1>
-          <p class="lede">A summary of every student admitted from 2000 to the present.</p>
-        </div>
-        <div class="search-wrap">
-          <input type="text" id="overviewSearch" placeholder="Quick search by name..." />
-          <div id="overviewSearchResults" class="quick-results"></div>
-        </div>
-      </header>
-
-      <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-label">Total Students</div>
-          <div class="stat-value" id="statTotal">0</div>
-          <div class="stat-foot">Year 2000 – 2020</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Boys</div>
-          <div class="stat-value" id="statMale">0</div>
-          <div class="stat-foot" id="statMalePct">0%</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Girls</div>
-          <div class="stat-value" id="statFemale">0</div>
-          <div class="stat-foot" id="statFemalePct">0%</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Active Classes</div>
-          <div class="stat-value" id="statClasses">0</div>
-          <div class="stat-foot">PP – IV</div>
-        </div>
-      </div>
-
-      <div class="chart-grid">
-        <div class="panel">
-          <div class="panel-head">
-            <h3>Admissions by Year</h3>
-          </div>
-          <canvas id="chartYears" height="130"></canvas>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Class Distribution</h3></div>
-          <canvas id="chartClasses" height="130"></canvas>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Boys / Girls Ratio</h3></div>
-          <canvas id="chartGender" height="130"></canvas>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== STUDENTS ===================== -->
-    <section class="view" id="view-students">
-      <header class="view-head">
-        <div>
-          <div class="eyebrow">Register</div>
-          <h1>Students</h1>
-          <p class="lede" id="studentsCount">— students</p>
-        </div>
-      </header>
-
-      <div class="filter-bar">
-        <input type="text" id="studentSearch" class="search-input" placeholder="Search by name, father, mother or address..." />
-        <select id="filterYear"><option value="">All Years</option></select>
-        <select id="filterClass"><option value="">All Classes</option></select>
-        <select id="filterGender">
-          <option value="">All</option>
-          <option value="M">Boy</option>
-          <option value="F">Girl</option>
-        </select>
-        <button class="btn ghost" id="resetFilters">Reset</button>
-      </div>
-
-      <div class="table-wrap">
-        <table class="data-table" id="studentsTable">
-          <thead>
-            <tr>
-              <th data-sort="sl">Sl</th>
-              <th data-sort="name">Name</th>
-              <th data-sort="class">Class</th>
-              <th data-sort="year">Year</th>
-              <th data-sort="gender">M/F</th>
-              <th data-sort="father">Father</th>
-              <th data-sort="mother">Mother</th>
-              <th data-sort="dob">D.O.B</th>
-              <th data-sort="admissionDate">Admission</th>
-            </tr>
-          </thead>
-          <tbody id="studentsTbody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ===================== CERTIFICATE ===================== -->
-    <section class="view" id="view-certificate">
-      <header class="view-head">
-        <div>
-          <div class="eyebrow">Certificate Generator</div>
-          <h1>Certificate</h1>
-          <p class="lede">Click a student's name in the list — the certificate will be generated on the school's letterhead.</p>
-        </div>
-      </header>
-
-      <div class="cert-layout">
-        <div class="cert-list-pane">
-          <input type="text" id="certSearch" class="search-input" placeholder="Search by name / class / year..." />
-          <div class="cert-filter-row">
             <select id="certFilterYear"><option value="">All Years</option></select>
             <select id="certFilterClass"><option value="">All Classes</option></select>
           </div>
@@ -870,8 +490,18 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
       <div id="adminPanel" class="admin-panel hidden">
         <div class="panel">
           <div class="panel-head-row">
-            <h3>Sync from Google Sheet</h3>
+            <h3>Storage Status</h3>
             <button class="btn ghost small" id="btnLogout">Logout</button>
+          </div>
+          <p class="lede" style="margin-bottom:10px;">This checks whether changes you make will actually be saved in <b>this browser</b> after a reload.</p>
+          <div id="storageStatusBox" class="hint" style="color:var(--ink);font-family:var(--font-mono);font-size:13px;"></div>
+          <button class="btn ghost small" id="btnTestStorage" style="margin-top:10px;">🔍 Run Storage Test</button>
+          <p class="fine-print">If this test fails, the problem is your browser/device (private browsing mode, "clear data on exit" settings, or storage blocked by a browser extension) — not the dashboard file itself. Try a normal (non-private) browser window, or a different browser, then run this test again.</p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head-row">
+            <h3>Sync from Google Sheet</h3>
           </div>
           <ol class="steps">
             <li>Open your Google Sheet → <b>File → Share → Publish to web</b></li>
@@ -965,22 +595,29 @@ const toast = (msg) => {
 // Tries Claude's built-in artifact storage first (only available inside claude.ai
 // previews); on a normal hosted site (e.g. GitHub Pages) that API does not exist,
 // so this falls back to the browser's localStorage, which actually persists there.
-// NOTE: localStorage only saves data on THIS device/browser — it is not shared
-// with other visitors. To share updates across devices/admins, use the Google
-// Sheet Sync in the Admin panel after making changes.
+// NOTE: localStorage only saves data on THIS device/browser/profile — it is not
+// shared with other visitors, and it can be wiped by private/incognito windows,
+// "clear browsing data" settings, or switching browsers/devices. To share updates
+// reliably across devices/admins, use the Google Sheet Sync in the Admin panel.
 const LS_PREFIX = "bps_dashboard_";
 const hasClaudeStorage = () => typeof window.storage !== "undefined" && window.storage && typeof window.storage.get === "function";
+let storageBackend = "unknown";
 
 async function storageGet(key) {
   if (hasClaudeStorage()) {
     try {
       const r = await window.storage.get(key, true);
+      storageBackend = "claude";
       if (r) return r.value;
+      return null;
     } catch (e) { /* fall through to localStorage */ }
   }
   try {
-    return localStorage.getItem(LS_PREFIX + key);
+    const v = localStorage.getItem(LS_PREFIX + key);
+    storageBackend = "local";
+    return v;
   } catch (e) {
+    storageBackend = "none";
     return null;
   }
 }
@@ -988,14 +625,21 @@ async function storageSet(key, value) {
   if (hasClaudeStorage()) {
     try {
       await window.storage.set(key, value, true);
+      storageBackend = "claude";
       return true;
     } catch (e) { /* fall through to localStorage */ }
   }
   try {
     localStorage.setItem(LS_PREFIX + key, value);
+    // verify the write actually landed — some browsers (private mode, storage
+    // blocked by a setting/extension) silently accept setItem but never persist it
+    const check = localStorage.getItem(LS_PREFIX + key);
+    if (check !== value) throw new Error("verification failed after write");
+    storageBackend = "local";
     return true;
   } catch (e) {
     console.error("storage save failed", e);
+    storageBackend = "none";
     return false;
   }
 }
@@ -1014,12 +658,23 @@ async function loadData() {
   } catch (e) {
     schoolInfo = { ...window.__SCHOOL__ };
   }
-  statusEl.textContent = `${students.length} students loaded`;
+  const backendLabel = storageBackend === "local" ? "saved in this browser" : storageBackend === "claude" ? "saved in preview" : "NOT saving — storage blocked";
+  statusEl.textContent = `${students.length} students loaded (${backendLabel})`;
+  if (storageBackend === "none") {
+    toast("Warning: this browser is blocking local storage — changes will not be saved after reload");
+  }
 }
 
 async function saveStudents() {
   const ok = await storageSet("students-data", JSON.stringify(students));
-  if (!ok) toast("Save failed — please try again");
+  if (!ok) {
+    toast("Save FAILED — this browser is blocking storage. Try a normal (non-private) window, or a different browser.");
+  }
+  const statusEl = document.getElementById("syncStatus");
+  if (statusEl) {
+    const backendLabel = storageBackend === "local" ? "saved in this browser" : storageBackend === "claude" ? "saved in preview" : "NOT saving — storage blocked";
+    statusEl.textContent = `${students.length} students loaded (${backendLabel})`;
+  }
 }
 async function saveSchoolInfo() {
   await storageSet("school-info", JSON.stringify(schoolInfo));
@@ -1149,7 +804,6 @@ document.getElementById("overviewSearch").addEventListener("input", (e) => {
     });
   });
 });
-
 
 // ---------------- STUDENTS TABLE ----------------
 function populateFilterOptions() {
@@ -1363,6 +1017,7 @@ function tryAdminLogin() {
     document.getElementById("editSchoolEstd").value = schoolInfo.estd;
     document.getElementById("editSignLabel").value = schoolInfo.signLabel;
     renderAdminTable();
+    runStorageTest();
   } else {
     document.getElementById("adminLoginError").textContent = "Incorrect password — please try again";
   }
@@ -1373,6 +1028,35 @@ document.getElementById("btnLogout").addEventListener("click", () => {
   document.getElementById("adminLoginBox").classList.remove("hidden");
   document.getElementById("adminPanel").classList.add("hidden");
 });
+
+function runStorageTest() {
+  const box = document.getElementById("storageStatusBox");
+  const lines = [];
+  lines.push(`URL: ${location.href}`);
+  lines.push(`Origin: ${location.origin || "(file:// — no origin)"}`);
+  lines.push(`Claude preview storage: ${hasClaudeStorage() ? "available" : "not available (expected on a normal website)"}`);
+  let localOk = false;
+  try {
+    const testKey = LS_PREFIX + "__test__";
+    const testVal = "ok-" + Date.now();
+    localStorage.setItem(testKey, testVal);
+    localOk = localStorage.getItem(testKey) === testVal;
+    localStorage.removeItem(testKey);
+  } catch (e) {
+    localOk = false;
+  }
+  lines.push(`Browser localStorage: ${localOk ? "WORKING ✓" : "BLOCKED ✗"}`);
+  let existingRaw = null;
+  try {
+    existingRaw = localStorage.getItem(LS_PREFIX + "students-data");
+  } catch (e) {}
+  lines.push(`Saved student data found in this browser: ${existingRaw ? JSON.parse(existingRaw).length + " records" : "none yet"}`);
+  box.innerHTML = lines.join("<br/>");
+  if (!localOk) {
+    toast("Storage test FAILED — this browser/device is blocking saved data");
+  }
+}
+document.getElementById("btnTestStorage").addEventListener("click", runStorageTest);
 
 document.getElementById("btnSaveSchoolInfo").addEventListener("click", async () => {
   schoolInfo.name = document.getElementById("editSchoolName").value;
@@ -1426,7 +1110,7 @@ function renderAdminTable() {
     });
   });
 }
-  document.getElementById("adminSearch").addEventListener("input", renderAdminTable);
+document.getElementById("adminSearch").addEventListener("input", renderAdminTable);
 
 document.getElementById("btnAddRow").addEventListener("click", async () => {
   const nextSl = students.length ? Math.max(...students.map((s) => Number(s.sl) || 0)) + 1 : 1;
